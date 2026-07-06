@@ -1,0 +1,85 @@
+/* checkout.css — Checkout page styling */
+
+.checkout-card {
+  background: #fff;
+  border: 1px solid var(--boutique-border, #e6dcd2);
+  border-radius: 12px;
+  padding: 28px;
+  height: 100%;
+}
+
+.checkout-section-title {
+  font-family: "Playfair Display", serif;
+  color: var(--boutique-primary, #6b4c3b);
+  border-bottom: 1px solid var(--boutique-border, #e6dcd2);
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+.form-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--boutique-dark, #2c2420);
+}
+
+.form-control:focus {
+  border-color: var(--boutique-accent, #c98d6b);
+  box-shadow: 0 0 0 0.2rem rgba(201, 141, 107, 0.2);
+}
+
+.payment-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border: 1px solid var(--boutique-border, #e6dcd2);
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.payment-option input {
+  margin: 0;
+}
+
+.payment-option label {
+  margin: 0;
+  cursor: pointer;
+}
+
+/* ---------- Order Summary ---------- */
+.order-summary {
+  position: sticky;
+  top: 20px;
+}
+
+.checkout-item {
+  border-bottom: 1px solid #f0e9e2;
+  padding-bottom: 12px;
+}
+
+.checkout-item-img {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.checkout-item-name {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.order-summary-totals {
+  border-top: 1px solid var(--boutique-border, #e6dcd2);
+  padding-top: 16px;
+  font-size: 0.95rem;
+}
+
+.order-total-row {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--boutique-primary, #6b4c3b);
+  border-top: 1px dashed var(--boutique-border, #e6dcd2);
+  padding-top: 10px;
+  margin-top: 8px;
+}
