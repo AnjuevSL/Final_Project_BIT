@@ -71,9 +71,9 @@
                     <a href="login.php" class="nav-icon me-3" title="Login">
                         <i class="fa-solid fa-user"></i>
                     </a>
-                    <a href="cart.php" class="nav-icon" title="Cart">
+                    <!-- <a href="cart.php" class="nav-icon" title="Cart">
                         <i class="fa-solid fa-cart-shopping"></i>
-                    </a>
+                    </a> -->
                 </div>
             </div>
         </div>
