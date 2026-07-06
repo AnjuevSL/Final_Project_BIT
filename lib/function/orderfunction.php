@@ -45,7 +45,7 @@ class Order extends Main
             );
 
             $sqlOrder->bind_param(
-                "ssssssssdddd",
+                "sssssssssddd",
                 $orderid,
                 $customer['fullname'],
                 $customer['phone'],
