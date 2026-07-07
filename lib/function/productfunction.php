@@ -11,6 +11,7 @@ include_once('img_upload.php');
 class Product extends Main
 {
 
+    // CREATE — add a new product
     public function addproduct($productname, $details, $price, $category, $supplier, $productimageName, $productimageSize, $productimageType, $productimageLocation)
     {
 
@@ -38,7 +39,54 @@ class Product extends Main
         }
     }
 
-    // Get all active products (for the home page)
+    // UPDATE — edit an existing product (image optional)
+    public function updateproduct($productId, $productname, $details, $price, $category, $supplier, $productimageName = null, $productimageType = null, $productimageLocation = null)
+    {
+        // If a new image was uploaded, replace it. Otherwise keep the existing image.
+        if (!empty($productimageName)) {
+            $imageupload = new ImageUpload;
+            $imageurl = $imageupload->imgUpload($productimageName, $productimageType, 'product', $productimageLocation, $productId);
+
+            $sql = $this->dbResult->prepare(
+                "UPDATE product_tbl
+                 SET productName = ?, productDetails = ?, price = ?, category = ?, image = ?, supplier = ?
+                 WHERE productid = ?"
+            );
+            $sql->bind_param("ssdssss", $productname, $details, $price, $category, $imageurl, $supplier, $productId);
+        } else {
+            $sql = $this->dbResult->prepare(
+                "UPDATE product_tbl
+                 SET productName = ?, productDetails = ?, price = ?, category = ?, supplier = ?
+                 WHERE productid = ?"
+            );
+            $sql->bind_param("ssdsss", $productname, $details, $price, $category, $supplier, $productId);
+        }
+
+        if ($sql->execute()) {
+            return ("success");
+        } else {
+            return ("error2");
+        }
+    }
+
+    // -----------------------------------------------------
+    // DELETE — soft delete (sets d_status = 0, keeps order history intact)
+    // -----------------------------------------------------
+    public function deleteproduct($productId)
+    {
+        $sql = $this->dbResult->prepare("UPDATE product_tbl SET d_status = 0 WHERE productid = ?");
+        $sql->bind_param("s", $productId);
+
+        if ($sql->execute()) {
+            return ("success");
+        } else {
+            return ("error2");
+        }
+    }
+
+    // -----------------------------------------------------
+    // READ — active products only (for the customer-facing site)
+    // -----------------------------------------------------
     public function getActiveProducts()
     {
         $sql = $this->dbResult->prepare(
@@ -53,13 +101,27 @@ class Product extends Main
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
-    // Get a single product by its ID
+    // READ — all products including inactive (for the admin panel)
+    public function getAllProducts()
+    {
+        $sql = $this->dbResult->prepare(
+            "SELECT productid, productName, productDetails, price, category, image, supplier, d_status
+             FROM product_tbl
+             ORDER BY productid DESC"
+        );
+        $sql->execute();
+        $result = $sql->get_result();
+
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    // READ — a single product by ID
     public function getProductById($productId)
     {
         $sql = $this->dbResult->prepare(
-            "SELECT productid, productName, productDetails, price, category, image, supplier
+            "SELECT productid, productName, productDetails, price, category, image, supplier, d_status
              FROM product_tbl
-             WHERE productid = ? AND d_status = 1"
+             WHERE productid = ?"
         );
         $sql->bind_param("s", $productId);
         $sql->execute();
