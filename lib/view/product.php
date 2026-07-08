@@ -283,6 +283,11 @@ if (isset($_SESSION['user'])) {
                                     '<span class="badge bg-success">Active</span>' :
                                     '<span class="badge bg-secondary">Inactive</span>';
 
+                                // Conditional button: Deactivate if active, Activate if inactive
+                                var statusButton = product.d_status == 1 ?
+                                    '<button class="btn btn-sm btn-outline-warning btn-deactivate" data-id="' + product.productid + '">Deactivate</button>' :
+                                    '<button class="btn btn-sm btn-outline-success btn-activate" data-id="' + product.productid + '">Activate</button>';
+
                                 rows += '<tr>' +
                                     '<td><img src="../../' + product.image + '" style="width:50px;height:50px;object-fit:cover;"></td>' +
                                     '<td>' + product.productName + '</td>' +
@@ -291,6 +296,7 @@ if (isset($_SESSION['user'])) {
                                     '<td>' + statusLabel + '</td>' +
                                     '<td>' +
                                         '<button class="btn btn-sm btn-outline-primary btn-edit" data-id="' + product.productid + '">Edit</button> ' +
+                                        statusButton + ' ' +
                                         '<button class="btn btn-sm btn-danger btn-delete" data-id="' + product.productid + '">Delete</button>' +
                                     '</td>' +
                                     '</tr>';
@@ -370,20 +376,72 @@ if (isset($_SESSION['user'])) {
 
             // ---------------- Delete Product ----------------
 
+            // Delete button click (event delegation since rows are added dynamically)
             $(document).on('click', '.btn-delete', function() {
                 var productId = $(this).data('id');
 
-                if (confirm('This product will be deactivated. Are you sure?')) {
+                if (confirm('This product will be permanently deleted. Are you sure?')) {
                     $.ajax({
                         url: "../routes/product/deleteproduct.php",
                         type: 'POST',
                         data: { productId: productId },
-                        success: function(data) {
-                            if (data.trim() === 'success') {
-                                alert('Product has been deactivated.');
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response.status === 'success') {
+                                alert('Product deleted successfully.');
                                 loadProducts();
                             } else {
-                                alert('Could not delete the product.');
+                                alert(response.message || 'Could not delete the product.');
+                            }
+                        },
+                        error: function() {
+                            alert('Something went wrong.');
+                        }
+                    });
+                }
+            });
+
+            // Deactivate button click (set d_status = 0)
+            $(document).on('click', '.btn-deactivate', function() {
+                var productId = $(this).data('id');
+
+                if (confirm('Deactivate this product?')) {
+                    $.ajax({
+                        url: "../routes/product/togglestatus.php",
+                        type: 'POST',
+                        data: { productId: productId, status: 0 },
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response.status === 'success') {
+                                alert('Product deactivated.');
+                                loadProducts();
+                            } else {
+                                alert('Could not deactivate the product.');
+                            }
+                        },
+                        error: function() {
+                            alert('Something went wrong.');
+                        }
+                    });
+                }
+            });
+
+            // Activate button click (set d_status = 1)
+            $(document).on('click', '.btn-activate', function() {
+                var productId = $(this).data('id');
+
+                if (confirm('Activate this product?')) {
+                    $.ajax({
+                        url: "../routes/product/togglestatus.php",
+                        type: 'POST',
+                        data: { productId: productId, status: 1 },
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response.status === 'success') {
+                                alert('Product activated.');
+                                loadProducts();
+                            } else {
+                                alert('Could not activate the product.');
                             }
                         },
                         error: function() {

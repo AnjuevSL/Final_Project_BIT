@@ -11,7 +11,7 @@ include_once('img_upload.php');
 class Product extends Main
 {
 
-    // CREATE — add a new product
+    // Add product option
     public function addproduct($productname, $details, $price, $category, $supplier, $productimageName, $productimageSize, $productimageType, $productimageLocation)
     {
 
@@ -39,7 +39,7 @@ class Product extends Main
         }
     }
 
-    // UPDATE — edit an existing product (image optional)
+    // Update Product
     public function updateproduct($productId, $productname, $details, $price, $category, $supplier, $productimageName = null, $productimageType = null, $productimageLocation = null)
     {
         // If a new image was uploaded, replace it. Otherwise keep the existing image.
@@ -69,10 +69,21 @@ class Product extends Main
         }
     }
 
-    // -----------------------------------------------------
-    // DELETE — soft delete (sets d_status = 0, keeps order history intact)
-    // -----------------------------------------------------
+    // Delete option
     public function deleteproduct($productId)
+    {
+        $sql = $this->dbResult->prepare("DELETE FROM product_tbl WHERE productid = ?");
+        $sql->bind_param("s", $productId);
+
+        if ($sql->execute()) {
+            return "success";
+        } else {
+            return "error";
+        }
+    }
+
+    // Deactivate option
+    public function deactivateproduct($productId)
     {
         $sql = $this->dbResult->prepare("UPDATE product_tbl SET d_status = 0 WHERE productid = ?");
         $sql->bind_param("s", $productId);
@@ -84,9 +95,7 @@ class Product extends Main
         }
     }
 
-    // -----------------------------------------------------
     // READ — active products only (for the customer-facing site)
-    // -----------------------------------------------------
     public function getActiveProducts()
     {
         $sql = $this->dbResult->prepare(
@@ -115,6 +124,19 @@ class Product extends Main
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
+
+    // TOGGLE STATUS — activate (d_status=1) or deactivate (d_status=0)
+    public function toggleStatus($productId, $status)
+    {
+        $sql = $this->dbResult->prepare("UPDATE product_tbl SET d_status = ? WHERE productid = ?");
+        $sql->bind_param("is", $status, $productId);
+
+        if ($sql->execute()) {
+            return "success";
+        } else {
+            return "error";
+        }
+    }
     // READ — a single product by ID
     public function getProductById($productId)
     {
