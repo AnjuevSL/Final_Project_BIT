@@ -38,7 +38,7 @@ if (isset($_SESSION['user'])) {
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-12">
-                        <h3 class="mb-3">All Orders</h3>
+                        <!-- <h4 class="mb-3">All Orders</h4> -->
                         
                         <!-- Status Tabs -->
                         <ul class="nav nav-tabs mb-3" role="tablist">

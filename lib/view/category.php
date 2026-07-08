@@ -295,7 +295,7 @@ if (isset($_SESSION['user'])) {
                                     '<td class="">' +
                                         '<button class="btn btn-sm btn-outline-primary btn-edit" data-id="' + category.categoryid + '">Edit</button> ' +
                                         statusButton + ' ' +
-                                        '<button class="btn btn-sm btn-danger btn-delete" data-id="' + category.categoryid + '">Delete</button>' +
+                                        '<button class="btn btn-sm btn-outline-danger btn-delete" data-id="' + category.categoryid + '">Delete</button>' +
                                     '</td>' +
                                     '</tr>';
                             });

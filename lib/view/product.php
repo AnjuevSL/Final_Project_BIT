@@ -297,7 +297,7 @@ if (isset($_SESSION['user'])) {
                                     '<td>' +
                                         '<button class="btn btn-sm btn-outline-primary btn-edit" data-id="' + product.productid + '">Edit</button> ' +
                                         statusButton + ' ' +
-                                        '<button class="btn btn-sm btn-danger btn-delete" data-id="' + product.productid + '">Delete</button>' +
+                                        '<button class="btn btn-sm btn-outline-danger btn-delete" data-id="' + product.productid + '">Delete</button>' +
                                     '</td>' +
                                     '</tr>';
                             });

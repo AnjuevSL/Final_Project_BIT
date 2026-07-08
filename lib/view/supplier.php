@@ -52,7 +52,7 @@ if (isset($_SESSION['user'])) {
                     <div class="row">
                         <div class="col-md-12">
                             <div class="d-flex justify-content-between align-items-center mb-3 ">
-                            <h4 class="mb-0">All Supplier</h4>
+                                <h4 class="mb-0">All Supplier</h4>
                                 <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addSupplierModal">
                                     <i class="bi bi-plus-circle"></i> Add Supplier
                                 </button>
@@ -206,7 +206,7 @@ if (isset($_SESSION['user'])) {
                             $.each(suppliers, function(index, supplier) {
                                 var statusLabel = supplier.d_status == 1 ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-secondary">Inactive</span>';
                                 var statusButton = supplier.d_status == 1 ? '<button class="btn btn-sm btn-outline-warning btn-deactivate" data-id="' + supplier.supplierid + '">Deactivate</button>' : '<button class="btn btn-sm btn-outline-success btn-activate" data-id="' + supplier.supplierid + '">Activate</button>';
-                                rows += '<tr><td>' + supplier.supplierid + '</td><td>' + supplier.supplierName + '</td><td>' + (supplier.email || '-') + '</td><td>' + (supplier.phone || '-') + '</td><td>' + statusLabel + '</td><td><button class="btn btn-sm btn-outline-primary btn-edit" data-id="' + supplier.supplierid + '">Edit</button> ' + statusButton + ' <button class="btn btn-sm btn-danger btn-delete" data-id="' + supplier.supplierid + '">Delete</button></td></tr>';
+                                rows += '<tr><td>' + supplier.supplierid + '</td><td>' + supplier.supplierName + '</td><td>' + (supplier.email || '-') + '</td><td>' + (supplier.phone || '-') + '</td><td>' + statusLabel + '</td><td><button class="btn btn-sm btn-outline-primary btn-edit" data-id="' + supplier.supplierid + '">Edit</button> ' + statusButton + ' <button class="btn btn-sm btn-outline-danger btn-delete" data-id="' + supplier.supplierid + '">Delete</button></td></tr>';
                             });
                         }
                         $('#supplierTableBody').html(rows);
