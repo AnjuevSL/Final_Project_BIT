@@ -278,6 +278,24 @@
                                     <p>Product Management</p>
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a href="category.php" class="nav-link" <?php echo $currentpage == 'category.php][' ? 'active' : ''; ?>>
+                                    <i class="nav-icon bi bi-circle"></i>
+                                    <p>Category Management</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="product.php" class="nav-link" <?php echo $currentpage == 'product.php][' ? 'active' : ''; ?>>
+                                    <i class="nav-icon bi bi-circle"></i>
+                                    <p>Suppliers Management</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="product.php" class="nav-link" <?php echo $currentpage == 'product.php][' ? 'active' : ''; ?>>
+                                    <i class="nav-icon bi bi-circle"></i>
+                                    <p>Orders Management</p>
+                                </a>
+                            </li>
                         </ul>
                     </li>
                     <li class="nav-item">
