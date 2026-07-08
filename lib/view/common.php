@@ -285,7 +285,7 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="product.php" class="nav-link" <?php echo $currentpage == 'product.php][' ? 'active' : ''; ?>>
+                                <a href="supplier.php" class="nav-link" <?php echo $currentpage == 'supplier.php][' ? 'active' : ''; ?>>
                                     <i class="nav-icon bi bi-circle"></i>
                                     <p>Suppliers Management</p>
                                 </a>
