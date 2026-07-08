@@ -291,7 +291,7 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="product.php" class="nav-link" <?php echo $currentpage == 'product.php][' ? 'active' : ''; ?>>
+                                <a href="order.php" class="nav-link" <?php echo $currentpage == 'order.php][' ? 'active' : ''; ?>>
                                     <i class="nav-icon bi bi-circle"></i>
                                     <p>Orders Management</p>
                                 </a>

@@ -1,8 +1,5 @@
 <?php
-//include main.php
 include_once('main.php');
-
-//include auto_id
 include_once('auto_id.php');
 
 class Order extends Main
@@ -122,5 +119,82 @@ class Order extends Main
         $order['items'] = $sqlItems->get_result()->fetch_all(MYSQLI_ASSOC);
 
         return $order;
+    }
+
+    // ========== ADMIN ORDER MANAGEMENT METHODS ==========
+
+    /**
+     * READ — all orders (for admin panel)
+     */
+    public function getAllOrders()
+    {
+        $sql = $this->dbResult->prepare(
+            "SELECT orderid, customer_name, phone, email, address, city, postal_code, 
+                    subtotal, delivery_fee, total, payment_method, order_status, created_at
+             FROM orders_tbl
+             ORDER BY created_at DESC"
+        );
+        $sql->execute();
+        $result = $sql->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    /**
+     * READ — orders filtered by status (for admin panel tabs)
+     */
+    public function getOrdersByStatus($status)
+    {
+        $sql = $this->dbResult->prepare(
+            "SELECT orderid, customer_name, phone, email, address, city, postal_code,
+                    subtotal, delivery_fee, total, payment_method, order_status, created_at
+             FROM orders_tbl
+             WHERE order_status = ?
+             ORDER BY created_at DESC"
+        );
+        $sql->bind_param("s", $status);
+        $sql->execute();
+        $result = $sql->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    /**
+     * UPDATE — change order status (admin action)
+     */
+    public function updateOrderStatus($orderId, $newStatus)
+    {
+        $allowedStatuses = ['pending', 'billing', 'ready_to_delivery', 'delivery', 'delivered', 'hold', 'cancelled'];
+
+        if (!in_array($newStatus, $allowedStatuses)) {
+            return "error";
+        }
+
+        $sql = $this->dbResult->prepare("UPDATE orders_tbl SET order_status = ? WHERE orderid = ?");
+        $sql->bind_param("ss", $newStatus, $orderId);
+
+        if ($sql->execute()) {
+            return "success";
+        } else {
+            return "error";
+        }
+    }
+
+    /**
+     * READ — count of orders by each status (for stats)
+     */
+    public function getOrderCountByStatus()
+    {
+        $statuses = ['pending', 'billing', 'ready_to_delivery', 'delivery', 'delivered', 'hold', 'cancelled'];
+        $counts = [];
+
+        foreach ($statuses as $status) {
+            $sql = $this->dbResult->prepare("SELECT COUNT(*) as count FROM orders_tbl WHERE order_status = ?");
+            $sql->bind_param("s", $status);
+            $sql->execute();
+            $result = $sql->get_result();
+            $row = $result->fetch_assoc();
+            $counts[$status] = $row['count'];
+        }
+
+        return $counts;
     }
 }

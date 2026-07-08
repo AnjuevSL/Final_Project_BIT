@@ -50,7 +50,7 @@ if (isset($_SESSION['user'])) {
 
                         <!-- Header row: title left, Add Product button right -->
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h3 class="mb-0">All Product</h3>
+                            <h4 class="mb-0">All Product</h4>
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">
                                 + Add Product
                             </button>

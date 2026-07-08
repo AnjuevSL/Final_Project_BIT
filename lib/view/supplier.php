@@ -29,11 +29,12 @@ if (isset($_SESSION['user'])) {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" crossorigin="anonymous" />
     <link rel="stylesheet" href="../../css/adminlte.css" />
     <script src="../../js/jquery.js"></script>
+    <?php include 'common.php'; ?>
+
 </head>
 
 <body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
     <div class="app-wrapper">
-        <?php include 'common.php'; ?>
 
         <main class="app-main">
             <div class="app-content-header">
@@ -50,33 +51,29 @@ if (isset($_SESSION['user'])) {
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-12">
-                            <div class="card">
-                                <div class="card-header d-flex justify-content-between ">
-                                    <h5 class="card-title">All Suppliers</h5>
-                                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addSupplierModal">
-                                        <i class="bi bi-plus-circle"></i> Add Supplier
-                                    </button>
-                                </div>
-                                <div class="card-body">
-                                    <table class="table table-bordered table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>Supplier ID</th>
-                                                <th>Supplier Name</th>
-                                                <th>Email</th>
-                                                <th>Phone</th>
-                                                <th>Status</th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="supplierTableBody">
-                                            <tr>
-                                                <td colspan="6" class="text-center">Loading...</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
+                            <div class="d-flex justify-content-between align-items-center mb-3 ">
+                            <h4 class="mb-0">All Supplier</h4>
+                                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addSupplierModal">
+                                    <i class="bi bi-plus-circle"></i> Add Supplier
+                                </button>
                             </div>
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Supplier ID</th>
+                                        <th>Supplier Name</th>
+                                        <th>Email</th>
+                                        <th>Phone</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="supplierTableBody">
+                                    <tr>
+                                        <td colspan="6" class="text-center">Loading...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
