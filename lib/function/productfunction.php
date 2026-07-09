@@ -113,11 +113,26 @@ class Product extends Main
     // READ — all products including inactive (for the admin panel)
     public function getAllProducts()
     {
-        $sql = $this->dbResult->prepare(
-            "SELECT productid, productName, productDetails, price, category, image, supplier, d_status
-             FROM product_tbl
-             ORDER BY productid DESC"
-        );
+        $sql = $this->dbResult->prepare("
+        SELECT
+            p.productid,
+            p.productName,
+            p.productDetails,
+            p.price,
+            p.category,
+            c.categoryName,
+            p.supplier,
+            s.supplierName,
+            p.image,
+            p.d_status
+        FROM product_tbl p
+        INNER JOIN categories_tbl c
+            ON p.category = c.categoryid
+        INNER JOIN suppliers_tbl s
+            ON p.supplier = s.supplierid
+        ORDER BY p.productid DESC
+    ");
+
         $sql->execute();
         $result = $sql->get_result();
 

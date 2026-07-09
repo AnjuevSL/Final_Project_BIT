@@ -19,7 +19,6 @@ if (isset($_SESSION['user'])) {
 }
 
 ?>
-<a href="logout.php"><button type="button" href="" class="btn btn-secondary">logout</button></a>
 
 <!doctype html>
 <html lang="en">

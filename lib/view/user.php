@@ -19,7 +19,7 @@ if (isset($_SESSION['user'])) {
 }
 
 ?>
-<a href="logout.php"><button type="button" href="" class="btn btn-secondary">logout</button></a>
+<!-- <a href="logout.php"><button type="button" href="" class="btn btn-secondary">logout</button></a> -->
 
 <!doctype html>
 <html lang="en">
@@ -62,26 +62,33 @@ if (isset($_SESSION['user'])) {
       </div>
       <!--begin::Row-->
       <div class="row">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center mb-3 ">
+              <h4 class="mb-0">All Users</h4>
+              <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addSupplierModal">
+                <i class="bi bi-plus-circle"></i> Add User
+              </button>
+            </div>
+            <table class="table table-bordered table-striped">
+              <thead>
+                <tr>
+                  <th scope="col">User Name</th>
+                  <th scope="col">Email Address</th>
+                  <th scope="col">NIC</th>
+                  <th scope="col">Phone Number</th>
+                  <th scope="col">Action</th>
+                </tr>
+              </thead>
+              <tbody id="userlist">
 
-        <table class="table table-hover">
-          <thead>
-            <tr class="table-danger">
-              <th scope="col">User Name</th>
-              <th scope="col">Email Address</th>
-              <th scope="col">NIC</th>
-              <th scope="col">Phone Number</th>
-              <th scope="col">Action</th>
-            </tr>
-          </thead>
-          <tbody id="userlist">
-
-          </tbody>
-        </table>
-
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <!--end::Container-->
       </div>
-      <!--end::Container-->
-    </div>
-    <!--end::App Content-->
+      <!--end::App Content-->
   </main>
 
   <div class="modal" id="edituserdata" tabindex="-1">

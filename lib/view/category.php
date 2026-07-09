@@ -50,7 +50,7 @@ if (isset($_SESSION['user'])) {
 
                         <!-- Header row: title left, Add category button right -->
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h3 class="mb-0">All Category</h3>
+                            <h4 class="mb-0">All Category</h4>
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addcategoryModal">
                                 + Add Category
                             </button>
@@ -295,7 +295,7 @@ if (isset($_SESSION['user'])) {
                                     '<td class="">' +
                                         '<button class="btn btn-sm btn-outline-primary btn-edit" data-id="' + category.categoryid + '">Edit</button> ' +
                                         statusButton + ' ' +
-                                        '<button class="btn btn-sm btn-danger btn-delete" data-id="' + category.categoryid + '">Delete</button>' +
+                                        '<button class="btn btn-sm btn-outline-danger btn-delete" data-id="' + category.categoryid + '">Delete</button>' +
                                     '</td>' +
                                     '</tr>';
                             });

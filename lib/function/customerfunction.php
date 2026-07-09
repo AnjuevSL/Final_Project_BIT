@@ -121,19 +121,19 @@ customerName = ?, customerPhone = ?, customerNIC = ?, customerGender = ?, custom
                 $btn = "";
 
                 if ($rec['loginStatus'] == '1') {
-                    $btn = '<button type="button" class="btn btn-warning deactivatebtn" data-id="' . $rec['customerid'] . '" data-status="Active">Deactivate</button>';
+                    $btn = '<button type="button" class="btn btn-sm btn-warning deactivatebtn" data-id="' . $rec['customerid'] . '" data-status="Active">Deactivate</button>';
                 } else if ($rec['loginStatus'] == '0') {
-                    $btn = '<button type="button" class="btn btn-success deactivatebtn" data-id="' . $rec['customerid'] . '" data-status="Deactive">Activate</button>';
+                    $btn = '<button type="button" class="btn btn-sm btn-success deactivatebtn" data-id="' . $rec['customerid'] . '" data-status="Deactive">Activate</button>';
                 } else {
                     $btn = "";
                 }
-                echo ('<tr class="table-success">
+                echo ('<tr class="">
                 <th scope="row">' . $rec['customerName'] . '</th>
                 <td>' . $rec['customerEmail'] . '</td>
                 <td>' . $rec['customerPhone'] . '</td>
                 <td>' . $rec['customerNIC'] . '</td>
-                <td class="my-0 py-0"><button type="button" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="edituser(\'' . $rec['customerid'] . '\' )" class="btn btn-info">Edit</button> 
-                <button type="button" class="btn btn-danger deletebtn" data-id="' . $rec['customerid'] . '">Delete</button>
+                <td class="my-0 py-0"><button type="button" data-bs-toggle="modal" data-bs-target="#staticBackdrop"  onclick="edituser(\'' . $rec['customerid'] . '\' )" class="btn btn-sm btn-info">Edit</button> 
+                <button type="button" class="btn btn-sm btn-danger deletebtn" data-id="' . $rec['customerid'] . '">Delete</button>
                 ' . $btn . '</td>
             </tr>');
             }
