@@ -41,7 +41,7 @@ class Auth extends Main
                                 return json_encode([
                                     'loginstatus' => true,
                                     'message' => "logged as Admin",
-                                    'path' => "lib/view/index.php"
+                                    'path' => "lib/view/dashboard.php"
                                 ]);
 
                             case ("customer"):
@@ -114,7 +114,7 @@ class Auth extends Main
                                 return json_encode([
                                     'loginstatus' => true,
                                     'message' => "logged as Admin",
-                                    'path' => "lib/view/index.php"
+                                    'path' => "lib/view/dashboard.php"
                                 ]);
 
                             case ("customer"):

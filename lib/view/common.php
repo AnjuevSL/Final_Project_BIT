@@ -146,7 +146,7 @@
              <!--end::Messages Dropdown Menu-->
 
              <!--begin::Notifications Dropdown Menu-->
-             <li class="nav-item dropdown">
+             <!-- <li class="nav-item dropdown">
                <a class="nav-link" data-bs-toggle="dropdown" href="#">
                  <i class="bi bi-bell-fill"></i>
                  <span class="navbar-badge badge text-bg-warning">15</span>
@@ -171,7 +171,7 @@
                  <div class="dropdown-divider"></div>
                  <a href="#" class="dropdown-item dropdown-footer"> See All Notifications </a>
                </div>
-             </li>
+             </li> -->
              <!--end::Notifications Dropdown Menu-->
 
              <!--begin::Fullscreen Toggle-->
@@ -221,6 +221,7 @@
          <!--end::Container-->
        </nav>
        <!--end::Header-->
+
        <!--begin::Sidebar-->
        <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
          <!--begin::Sidebar Brand-->
@@ -251,82 +252,100 @@
                aria-label="Main navigation"
                data-accordion="false"
                id="navigation">
+
+               <!-- dashboard -->
+               <li class="nav-item">
+                 <a href="dashboard.php" class="nav-link <?php echo $currentpage == 'dashboard.php' ? 'active' : ''; ?>">
+                   <i class="nav-icon bi bi-speedometer2"></i>
+                   <p>Dashboard</p>
+                 </a>
+               </li>
+
+               <!-- Management -->
                <li class="nav-item menu-open">
                  <a href="#" class="nav-link active">
-                   <i class="nav-icon bi bi-speedometer"></i>
+                   <i class="nav-icon bi bi-gear-fill"></i>
                    <p>
-                     Dashboard
+                     Management Options
                      <i class="nav-arrow bi bi-chevron-right"></i>
                    </p>
                  </a>
                  <ul class="nav nav-treeview">
                    <li class="nav-item">
-                     <a href="index.php" class="nav-link <?php echo $currentpage == 'index.php' ? 'active' : ''; ?>">
-                       <i class="nav-icon bi bi-circle"></i>
-                       <p>Dashboard</p>
-                     </a>
-                   </li>
-                   <li class="nav-item">
-                     <a href="user.php" class="nav-link" <?php echo $currentpage == 'user.php' ? 'active' : ''; ?>>
-                       <i class="nav-icon bi bi-circle"></i>
-                       <p>User Managemnt</p>
+                     <a href="order.php" class="nav-link" <?php echo $currentpage == 'order.php][' ? 'active' : ''; ?>>
+                       <i class="nav-icon bi bi-cart-check-fill"></i>
+                       <p>Orders Management</p>
                      </a>
                    </li>
                    <li class="nav-item">
                      <a href="product.php" class="nav-link" <?php echo $currentpage == 'product.php][' ? 'active' : ''; ?>>
-                       <i class="nav-icon bi bi-circle"></i>
+                       <i class="nav-icon bi bi-box-seam-fill"></i>
                        <p>Product Management</p>
                      </a>
                    </li>
                    <li class="nav-item">
                      <a href="category.php" class="nav-link" <?php echo $currentpage == 'category.php][' ? 'active' : ''; ?>>
-                       <i class="nav-icon bi bi-circle"></i>
+                       <i class="nav-icon bi bi-tags-fill"></i>
                        <p>Category Management</p>
                      </a>
                    </li>
                    <li class="nav-item">
                      <a href="supplier.php" class="nav-link" <?php echo $currentpage == 'supplier.php][' ? 'active' : ''; ?>>
-                       <i class="nav-icon bi bi-circle"></i>
+                       <i class="nav-icon bi bi-truck"></i>
                        <p>Suppliers Management</p>
                      </a>
                    </li>
                    <li class="nav-item">
-                     <a href="order.php" class="nav-link" <?php echo $currentpage == 'order.php][' ? 'active' : ''; ?>>
-                       <i class="nav-icon bi bi-circle"></i>
-                       <p>Orders Management</p>
+                     <a href="user.php" class="nav-link" <?php echo $currentpage == 'user.php' ? 'active' : ''; ?>>
+                       <i class="nav-icon bi bi-people-fill"></i>
+                       <p>User Managemnt</p>
                      </a>
                    </li>
                  </ul>
                </li>
-               <li class="nav-item">
+
+               <!-- Theme -->
+               <!-- <li class="nav-item">
                  <a href="./generate/theme.html" class="nav-link">
                    <i class="nav-icon bi bi-palette"></i>
                    <p>Theme Generate</p>
                  </a>
-               </li>
+               </li> -->
 
-
-               <li class="nav-header">LABELS</li>
-               <li class="nav-item">
-                 <a href="#" class="nav-link">
-                   <i class="nav-icon bi bi-circle text-danger"></i>
-                   <p class="text">Important</p>
+               <!-- lables -->
+               <li class="nav-item menu-open">
+                 <!-- <li class="nav-header">LABELS</li> -->
+                 <a href="#" class="nav-link active">
+                   <i class="nav-icon bi bi-gear-fill"></i>
+                   <p>
+                     Labels
+                     <i class="nav-arrow bi bi-chevron-right"></i>
+                   </p>
                  </a>
-               </li>
-               <li class="nav-item">
-                 <a href="#" class="nav-link">
-                   <i class="nav-icon bi bi-circle text-warning"></i>
-                   <p>Warning</p>
-                 </a>
-               </li>
-               <li class="nav-item">
-                 <a href="#" class="nav-link">
-                   <i class="nav-icon bi bi-circle text-info"></i>
-                   <p>Informational</p>
-                 </a>
+                 <ul class="nav nav-treeview">
+                   <li class="nav-item">
+                     <a href="#" class="nav-link">
+                       <i class="nav-icon bi bi-circle text-danger"></i>
+                       <p class="text">Important</p>
+                     </a>
+                   </li>
+                   <li class="nav-item">
+                     <a href="#" class="nav-link">
+                       <i class="nav-icon bi bi-circle text-warning"></i>
+                       <p>Warning</p>
+                     </a>
+                   </li>
+                   <li class="nav-item">
+                     <a href="#" class="nav-link">
+                       <i class="nav-icon bi bi-circle text-info"></i>
+                       <p>Informational</p>
+                     </a>
+                   </li>
+                 </ul>
                </li>
              </ul>
              <!--end::Sidebar Menu-->
+             <hr>
              <a href="logout.php"><button type="button" href="" class="btn btn-secondary">logout</button></a>
 
            </nav>

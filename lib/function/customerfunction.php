@@ -127,7 +127,7 @@ customerName = ?, customerPhone = ?, customerNIC = ?, customerGender = ?, custom
                 } else {
                     $btn = "";
                 }
-                echo ('<tr class="table-success">
+                echo ('<tr class="">
                 <th scope="row">' . $rec['customerName'] . '</th>
                 <td>' . $rec['customerEmail'] . '</td>
                 <td>' . $rec['customerPhone'] . '</td>

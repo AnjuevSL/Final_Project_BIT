@@ -18,6 +18,14 @@ if (isset($_SESSION['user'])) {
     header('Location:../../login.php');
 }
 
+include_once('../function/categoryfunction.php');
+include_once('../function/supplierfunction.php');
+
+$categoryObj = new Category();
+$categories = $categoryObj->getAllCategories();
+
+$supplierObj = new Supplier();
+$suppliers = $supplierObj->getAllSuppliers();
 ?>
 <!doctype html>
 <html lang="en">
@@ -104,17 +112,27 @@ if (isset($_SESSION['user'])) {
                             <div>
                                 <label for="category" class="form-label mt-3">Product Category</label>
                                 <select class="form-select" id="category" name="category">
-                                    <option>cat 1</option>
-                                    <option>cat 2</option>
-                                    <option>cat 3</option>
+                                    <option value="">-- Select Category --</option>
+
+                                    <?php foreach ($categories as $category) { ?>
+                                        <option value="<?= $category['categoryid']; ?>">
+                                            <?= htmlspecialchars($category['categoryName']); ?>
+                                        </option>
+                                    <?php } ?>
+
                                 </select>
                             </div>
                             <div>
                                 <label for="supplier" class="form-label mt-3">Supplier</label>
                                 <select class="form-select" id="supplier" name="supplier">
-                                    <option>1</option>
-                                    <option>2</option>
-                                    <option>3</option>
+                                    <option value="">-- Select Supplier --</option>
+
+                                    <?php foreach ($suppliers as $supplier) { ?>
+                                        <option value="<?= $supplier['supplierid']; ?>">
+                                            <?= htmlspecialchars($supplier['supplierName']); ?>
+                                        </option>
+                                    <?php } ?>
+
                                 </select>
                             </div>
                             <div class="row">
@@ -162,19 +180,29 @@ if (isset($_SESSION['user'])) {
                                 <input type="number" step="0.01" min="0" class="form-control" id="edit_price" name="price">
                             </div>
                             <div>
-                                <label for="edit_category" class="form-label mt-3">Product Category</label>
+                                <label for="category" class="form-label mt-3">Product Category</label>
                                 <select class="form-select" id="edit_category" name="category">
-                                    <option>cat 1</option>
-                                    <option>cat 2</option>
-                                    <option>cat 3</option>
+                                    <option value="">-- Select Category --</option>
+
+                                    <?php foreach ($categories as $category) { ?>
+                                        <option value="<?= $category['categoryid']; ?>">
+                                            <?= htmlspecialchars($category['categoryName']); ?>
+                                        </option>
+                                    <?php } ?>
+
                                 </select>
                             </div>
                             <div>
-                                <label for="edit_supplier" class="form-label mt-3">Supplier</label>
+                                <label for="supplier" class="form-label mt-3">Supplier</label>
                                 <select class="form-select" id="edit_supplier" name="supplier">
-                                    <option>1</option>
-                                    <option>2</option>
-                                    <option>3</option>
+                                    <option value="">-- Select Supplier --</option>
+
+                                    <?php foreach ($suppliers as $supplier) { ?>
+                                        <option value="<?= $supplier['supplierid']; ?>">
+                                            <?= htmlspecialchars($supplier['supplierName']); ?>
+                                        </option>
+                                    <?php } ?>
+
                                 </select>
                             </div>
                             <div class="row">
@@ -292,12 +320,13 @@ if (isset($_SESSION['user'])) {
                                     '<td><img src="../../' + product.image + '" style="width:50px;height:50px;object-fit:cover;"></td>' +
                                     '<td>' + product.productName + '</td>' +
                                     '<td>Rs.' + parseFloat(product.price).toFixed(2) + '</td>' +
-                                    '<td>' + product.category + '</td>' +
+                                    '<td>' + product.categoryName + '</td>' +
+                                    // '<td>' + product.supplierName + '</td>' +
                                     '<td>' + statusLabel + '</td>' +
                                     '<td>' +
-                                        '<button class="btn btn-sm btn-outline-primary btn-edit" data-id="' + product.productid + '">Edit</button> ' +
-                                        statusButton + ' ' +
-                                        '<button class="btn btn-sm btn-outline-danger btn-delete" data-id="' + product.productid + '">Delete</button>' +
+                                    '<button class="btn btn-sm btn-outline-primary btn-edit" data-id="' + product.productid + '">Edit</button> ' +
+                                    statusButton + ' ' +
+                                    '<button class="btn btn-sm btn-outline-danger btn-delete" data-id="' + product.productid + '">Delete</button>' +
                                     '</td>' +
                                     '</tr>';
                             });
@@ -320,15 +349,17 @@ if (isset($_SESSION['user'])) {
                 $.ajax({
                     url: "../routes/product/viewproducts.php",
                     type: 'GET',
-                    data: { productId: productId },
+                    data: {
+                        productId: productId
+                    },
                     dataType: 'json',
                     success: function(product) {
                         $('#edit_productId').val(product.productid);
                         $('#edit_productname').val(product.productName);
                         $('#edit_details').val(product.productDetails);
                         $('#edit_price').val(product.price);
-                        $('#edit_category').val(product.category);
-                        $('#edit_supplier').val(product.supplier);
+                        $('#edit_category').val(product.category );
+                        $('#edit_supplier').val(product.supplier );
                         $('#edit_imgprev').attr('src', '../../' + product.image);
 
                         $('#editProductModal').modal('show');
@@ -384,7 +415,9 @@ if (isset($_SESSION['user'])) {
                     $.ajax({
                         url: "../routes/product/deleteproduct.php",
                         type: 'POST',
-                        data: { productId: productId },
+                        data: {
+                            productId: productId
+                        },
                         dataType: 'json',
                         success: function(response) {
                             if (response.status === 'success') {
@@ -409,7 +442,10 @@ if (isset($_SESSION['user'])) {
                     $.ajax({
                         url: "../routes/product/togglestatus.php",
                         type: 'POST',
-                        data: { productId: productId, status: 0 },
+                        data: {
+                            productId: productId,
+                            status: 0
+                        },
                         dataType: 'json',
                         success: function(response) {
                             if (response.status === 'success') {
@@ -434,7 +470,10 @@ if (isset($_SESSION['user'])) {
                     $.ajax({
                         url: "../routes/product/togglestatus.php",
                         type: 'POST',
-                        data: { productId: productId, status: 1 },
+                        data: {
+                            productId: productId,
+                            status: 1
+                        },
                         dataType: 'json',
                         success: function(response) {
                             if (response.status === 'success') {
