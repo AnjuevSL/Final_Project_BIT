@@ -1,15 +1,18 @@
 <?php
 
-//include the function page
 include_once('../../function/AuthFunction.php');
 
-$email = $_POST['loginEmail'];
-$password = $_POST['loginPassword'];
+header('Content-Type: application/json');
 
-$customerObj = new auth();
+if (isset($_POST['loginEmail']) && isset($_POST['loginPassword'])) {
 
-$result = $customerObj->authentication($email, $password);
+    $authObj = new Auth();
+    $result = $authObj->authentication($_POST['loginEmail'], $_POST['loginPassword']);
 
-echo($result);
-
-?>
+    echo $result;
+} else {
+    echo json_encode([
+        'loginstatus' => false,
+        'message' => 'fill all inputs!'
+    ]);
+}

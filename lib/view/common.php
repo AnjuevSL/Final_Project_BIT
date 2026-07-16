@@ -254,7 +254,7 @@
                id="navigation">
 
                <!-- dashboard -->
-               <li class="nav-item">
+               <li class="nav-item menu-open mb-3">
                  <a href="dashboard.php" class="nav-link <?php echo $currentpage == 'dashboard.php' ? 'active' : ''; ?>">
                    <i class="nav-icon bi bi-speedometer2"></i>
                    <p>Dashboard</p>
@@ -262,7 +262,7 @@
                </li>
 
                <!-- Management -->
-               <li class="nav-item menu-open">
+               <li class="nav-item menu-open mb-3">
                  <a href="#" class="nav-link active">
                    <i class="nav-icon bi bi-gear-fill"></i>
                    <p>
@@ -296,6 +296,12 @@
                      </a>
                    </li>
                    <li class="nav-item">
+                     <a href="customer.php" class="nav-link" <?php echo $currentpage == 'customer.php][' ? 'active' : ''; ?>>
+                       <i class="nav-icon bi bi-truck"></i>
+                       <p>Customer Management</p>
+                     </a>
+                   </li>
+                   <li class="nav-item">
                      <a href="user.php" class="nav-link" <?php echo $currentpage == 'user.php' ? 'active' : ''; ?>>
                        <i class="nav-icon bi bi-people-fill"></i>
                        <p>User Managemnt</p>
@@ -304,8 +310,45 @@
                  </ul>
                </li>
 
+               <!-- Reporting -->
+               <li class="nav-item <?php echo (in_array($currentpage, ['order_report.php', 'product_report.php', 'category_report.php', 'supplier_report.php'])) ? 'menu-open' : ''; ?> mb-3">
+                 <a href="#" class="nav-link <?php echo (in_array($currentpage, ['order_report.php', 'product_report.php', 'category_report.php', 'supplier_report.php'])) ? 'active' : ''; ?>">
+                   <i class="nav-icon bi bi-gear-fill"></i>
+                   <p>
+                     Report Options
+                     <i class="nav-arrow bi bi-chevron-right"></i>
+                   </p>
+                 </a>
+                 <ul class="nav nav-treeview">
+                   <li class="nav-item">
+                     <a href="order_report.php" class="nav-link <?php echo ($currentpage == 'order_report.php') ? 'active' : ''; ?>">
+                       <i class="nav-icon bi bi-cart-check-fill"></i>
+                       <p>Order Report</p>
+                     </a>
+                   </li>
+                   <li class="nav-item">
+                     <a href="product_report.php" class="nav-link <?php echo ($currentpage == 'product_report.php') ? 'active' : ''; ?>">
+                       <i class="nav-icon bi bi-box-seam-fill"></i>
+                       <p>Product Report</p>
+                     </a>
+                   </li>
+                   <li class="nav-item">
+                     <a href="category_report.php" class="nav-link <?php echo ($currentpage == 'category_report.php') ? 'active' : ''; ?>">
+                       <i class="nav-icon bi bi-tags-fill"></i>
+                       <p>Category Report</p>
+                     </a>
+                   </li>
+                   <li class="nav-item">
+                     <a href="supplier_report.php" class="nav-link <?php echo ($currentpage == 'supplier_report.php') ? 'active' : ''; ?>">
+                       <i class="nav-icon bi bi-truck"></i>
+                       <p>Suppliers Report</p>
+                     </a>
+                   </li>
+                 </ul>
+               </li>
+
                <!-- Theme -->
-               <!-- <li class="nav-item">
+               <!-- <li class="nav-item mb-3">
                  <a href="./generate/theme.html" class="nav-link">
                    <i class="nav-icon bi bi-palette"></i>
                    <p>Theme Generate</p>
@@ -313,7 +356,7 @@
                </li> -->
 
                <!-- lables -->
-               <li class="nav-item menu-open">
+               <li class="nav-item menu-open  mb-3">
                  <!-- <li class="nav-header">LABELS</li> -->
                  <a href="#" class="nav-link active">
                    <i class="nav-icon bi bi-gear-fill"></i>
