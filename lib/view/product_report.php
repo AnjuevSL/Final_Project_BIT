@@ -1,10 +1,10 @@
 <?php
 session_start();
 if (isset($_SESSION['user']) && isset($_SESSION['usertype']) && $_SESSION['usertype'] == "Admin") {
-    $currentpage = 'product_report.php';
+  $currentpage = 'product_report.php';
 } else {
-    header('Location:../../login.php');
-    exit();
+  header('Location:../../index.php');
+  exit();
 }
 
 include_once('../function/reportfunction.php');
@@ -22,16 +22,20 @@ $supplierList  = $repObj->getAllSuppliersList();
 ?>
 <!doctype html>
 <html lang="en">
+
 <head>
   <title>Product Report</title>
   <?php include_once('common.php'); ?>
 </head>
+
 <body>
   <main class="app-main">
     <div class="app-content-header mt-3">
       <div class="container-fluid">
         <div class="row">
-          <div class="col-sm-6"><h3 class="mb-0">Product Report</h3></div>
+          <div class="col-sm-6">
+            <h3 class="mb-0">Product Report</h3>
+          </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-end">
               <li class="breadcrumb-item"><a href="dashboard.php">Home</a></li>
@@ -119,7 +123,7 @@ $supplierList  = $repObj->getAllSuppliersList();
                 <button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-funnel"></i> Filter</button>
                 <a href="product_report.php" class="btn btn-secondary btn-sm">Reset</a>
                 <a href="export_product_report.php?category=<?php echo urlencode($category ?? ''); ?>&supplier=<?php echo urlencode($supplier ?? ''); ?>&status=<?php echo urlencode($status ?? ''); ?>"
-                   class="btn btn-success btn-sm ms-auto">
+                  class="btn btn-success btn-sm ms-auto">
                   <i class="bi bi-file-earmark-excel"></i> Export to Excel
                 </a>
               </div>
@@ -180,13 +184,14 @@ $supplierList  = $repObj->getAllSuppliersList();
   </main>
   <script src="../../js/jquery.js"></script>
   <script>
-    document.getElementById('searchProduct').addEventListener('keyup', function () {
+    document.getElementById('searchProduct').addEventListener('keyup', function() {
       const filter = this.value.toLowerCase();
-      document.querySelectorAll('#productlist tr').forEach(function (row) {
+      document.querySelectorAll('#productlist tr').forEach(function(row) {
         row.style.display = row.textContent.toLowerCase().includes(filter) ? '' : 'none';
       });
     });
   </script>
   <?php include_once('footer.php'); ?>
 </body>
+
 </html>

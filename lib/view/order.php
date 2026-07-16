@@ -4,17 +4,18 @@ if (isset($_SESSION['user'])) {
     if (isset($_SESSION['usertype'])) {
         $usertype = $_SESSION['usertype'];
         if ($usertype != "Admin") {
-            header('Location:../../login.php');
+            header('Location:../../index.php');
         }
     } else {
-        header('Location:../../login.php');
+        header('Location:../../index.php');
     }
 } else {
-    header('Location:../../login.php');
+    header('Location:../../index.php');
 }
 ?>
 <!doctype html>
 <html lang="en">
+
 <head>
     <title>Order Management</title>
     <?php include_once('common.php') ?>
@@ -39,7 +40,7 @@ if (isset($_SESSION['user'])) {
                 <div class="row">
                     <div class="col-12">
                         <!-- <h4 class="mb-3">All Orders</h4> -->
-                        
+
                         <!-- Status Tabs -->
                         <ul class="nav nav-tabs mb-3" role="tablist">
                             <li class="nav-item">
@@ -335,7 +336,7 @@ if (isset($_SESSION['user'])) {
                         html += '<div><strong>Subtotal:</strong> Rs.' + parseFloat(order.subtotal).toFixed(2) + '</div>';
                         html += '<div><strong>Delivery Fee:</strong> Rs.' + parseFloat(order.delivery_fee).toFixed(2) + '</div>';
                         html += '<div><strong>Total:</strong> Rs.' + parseFloat(order.total).toFixed(2) + '</div>';
-                        
+
                         if (order.items && order.items.length > 0) {
                             html += '<h6 class="mt-3">Order Items:</h6><table class="table table-sm"><thead><tr><th>Product</th><th>Price</th><th>Qty</th><th>Total</th></tr></thead><tbody>';
                             $.each(order.items, function(index, item) {
@@ -343,7 +344,7 @@ if (isset($_SESSION['user'])) {
                             });
                             html += '</tbody></table>';
                         }
-                        
+
                         $('#orderDetailsContent').html(html);
                         $('#viewOrderModal').modal('show');
                     }
@@ -359,11 +360,14 @@ if (isset($_SESSION['user'])) {
             $('#confirmStatusBtn').on('click', function() {
                 var orderId = $('#statusOrderId').val();
                 var newStatus = $('#statusSelect').val();
-                
+
                 $.ajax({
                     url: "../routes/order/updateorderstatus.php",
                     type: 'POST',
-                    data: {orderId: orderId, status: newStatus},
+                    data: {
+                        orderId: orderId,
+                        status: newStatus
+                    },
                     dataType: 'json',
                     success: function(response) {
                         if (response.status === 'success') {

@@ -8,20 +8,24 @@
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/fontawesome-free-7.1.0-web/css/all.min.css">
     <style>
-        .nav-icon{
-    color: #BF9264;
-    font-size: 20px;
-    text-decoration: none;
-}
-.search-btn{
-    background: transparent;
-    border: none;
-    color:#BF9264; /* brown */
-    font-size: 20px;
-}
-.search-btn:hover{
-    color: dark;/* lighter brown on hover */
-}
+        .nav-icon {
+            color: #BF9264;
+            font-size: 20px;
+            text-decoration: none;
+        }
+
+        .search-btn {
+            background: transparent;
+            border: none;
+            color: #BF9264;
+            /* brown */
+            font-size: 20px;
+        }
+
+        .search-btn:hover {
+            color: dark;
+            /* lighter brown on hover */
+        }
     </style>
 </head>
 
@@ -33,7 +37,7 @@
 
             <!-- Logo -->
             <a class="navbar-brand py-0" href="index.php">
-                <img src="assets/logo2.png" alt="Logo" height="60" style="margin-top:-10px" >
+                <img src="assets/logo2.png" alt="Logo" height="60" style="margin-top:-10px">
             </a>
 
             <!-- Toggle button (for mobile) -->
@@ -68,15 +72,18 @@
 
                 <!-- Right: Login + Cart Icons -->
                 <div class="d-flex align-items-center ms-lg-3 mt-2 mt-lg-0">
-                    <a href="login.php" class="nav-icon me-3" title="Login">
+                    <!-- <a href="index.php" class="nav-icon me-3" title="Login">
                         <i class="fa-solid fa-user"></i>
-                    </a>
+                    </a> -->
                     <!-- <a href="cart.php" class="nav-icon" title="Cart">
                         <i class="fa-solid fa-cart-shopping"></i>
                     </a> -->
+                    <a href="lib/view/logout.php"><button type="button" href="" class="btn btn-secondary">logout</button></a>
+
                 </div>
             </div>
         </div>
     </nav>
 </body>
+
 </html>

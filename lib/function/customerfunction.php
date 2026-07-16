@@ -212,24 +212,25 @@ customerName = ?, customerPhone = ?, customerNIC = ?, customerGender = ?, custom
 
         $sqlinsert->close();
     }
-    public function deactivatebyid($id){
-    if($this->dbResult->error){
-        echo($this->dbResult->error);
-        exit;
+    public function deactivatebyid($id)
+    {
+        if ($this->dbResult->error) {
+            echo ($this->dbResult->error);
+            exit;
+        }
+
+        $deletecustomer = $this->dbResult->prepare("UPDATE login_tbl SET loginStatus = IF(loginStatus = 1, 0, 1) WHERE loginid = ?");
+
+        $deletecustomer->bind_param("s", $id);
+
+        if (!$deletecustomer->execute()) {
+            return ("error");
+        } else {
+            return ("success");
+        }
+
+        $deletecustomer->close();
+
+        $sqlinsert->close();
     }
-
-    $deletecustomer = $this->dbResult->prepare("UPDATE login_tbl SET loginStatus = IF(loginStatus = 1, 0, 1) WHERE loginid = ?");
-
-    $deletecustomer->bind_param("s",$id);
-
-    if(!$deletecustomer->execute()){
-        return("error");
-    }else{
-        return("success");
-    }
-
-    $deletecustomer->close();
-
-    $sqlinsert->close();
-}
 }

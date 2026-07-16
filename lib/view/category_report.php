@@ -3,7 +3,7 @@ session_start();
 if (isset($_SESSION['user']) && isset($_SESSION['usertype']) && $_SESSION['usertype'] == "Admin") {
     $currentpage = 'category_report.php';
 } else {
-    header('Location:../../login.php');
+    header('Location:../../index.php');
     exit();
 }
 

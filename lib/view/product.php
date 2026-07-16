@@ -9,13 +9,13 @@ if (isset($_SESSION['user'])) {
         $usertype = $_SESSION['usertype'];
         if ($usertype == "Admin") {
         } else {
-            header('Location:../../login.php');
+            header('Location:../../index.php');
         }
     } else {
-        header('Location:../../login.php');
+        header('Location:../../index.php');
     }
 } else {
-    header('Location:../../login.php');
+    header('Location:../../index.php');
 }
 
 include_once('../function/categoryfunction.php');
@@ -358,8 +358,8 @@ $suppliers = $supplierObj->getAllSuppliers();
                         $('#edit_productname').val(product.productName);
                         $('#edit_details').val(product.productDetails);
                         $('#edit_price').val(product.price);
-                        $('#edit_category').val(product.category );
-                        $('#edit_supplier').val(product.supplier );
+                        $('#edit_category').val(product.category);
+                        $('#edit_supplier').val(product.supplier);
                         $('#edit_imgprev').attr('src', '../../' + product.image);
 
                         $('#editProductModal').modal('show');
