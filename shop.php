@@ -20,6 +20,7 @@ function e($string) {
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="css/cart.css">
+    <link rel="stylesheet" href="css/fontawesome-free-7.1.0-web/css/all.min.css">
 </head>
 
 <body>

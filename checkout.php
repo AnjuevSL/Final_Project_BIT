@@ -1,7 +1,26 @@
 <?php
+session_start();
+include_once('lib/function/customerfunction.php');
+
 // Helper — escapes output for XSS protection
-function e($string) {
+function e($string)
+{
     return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
+}
+
+// If a customer is logged in, pre-fill their saved details
+$customer = null;
+
+if (isset($_SESSION['user']) && isset($_SESSION['usertype']) && $_SESSION['usertype'] == 'Customer') {
+    $custObj = new Customer();
+    $customerJson = $custObj->loaddatabyid($_SESSION['user']);
+
+    if ($customerJson) {
+        $customer = json_decode($customerJson, true);
+    }
+    //     echo "<pre>";
+    // print_r($customer);
+    // exit();
 }
 ?>
 <!DOCTYPE html>
@@ -34,17 +53,21 @@ function e($string) {
                     <form id="checkoutForm" action="place_order.php" method="POST">
 
                         <div class="row g-3">
+                            <!-- <div class="col-md-6"> -->
+                            <!-- <label class="form-label">Customer Id</label> -->
+                            <input type="text" name="cusid" class="form-control" value="<?= e($customer['customerid'] ?? '') ?>" required hidden>
+                            <!-- </div> -->
                             <div class="col-md-6">
                                 <label class="form-label">Full Name</label>
-                                <input type="text" name="fullname" class="form-control" required>
+                                <input type="text" name="fullname" class="form-control" value="<?= e($customer['customerName'] ?? '') ?>" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Phone Number</label>
-                                <input type="tel" name="phone" class="form-control" required>
+                                <input type="tel" name="phone" class="form-control" value="<?= e($customer['customerPhone'] ?? '') ?>" required>
                             </div>
                             <div class="col-12">
                                 <label class="form-label">Email</label>
-                                <input type="email" name="email" class="form-control" required>
+                                <input type="email" name="email" class="form-control" value="<?= e($customer['customerEmail'] ?? '') ?>" required>
                             </div>
                             <div class="col-12">
                                 <label class="form-label">Delivery Address</label>
@@ -92,7 +115,7 @@ function e($string) {
 
                     <div id="checkoutItems"></div>
                     <p id="checkoutEmpty" class="text-center text-muted" style="display:none;">
-                        Your cart is empty. <a href="index.php">Continue shopping</a>.
+                        Your cart is empty. <a href="shop.php">Continue shopping</a>.
                     </p>
 
                     <div class="order-summary-totals mt-3">

@@ -73,7 +73,7 @@ if (isset($_SESSION['user'])) {
                                     <thead>
                                         <tr>
                                             <th>Order ID</th>
-                                            <th>Customer</th>
+                                            <th>Customer Name</th>
                                             <th>Total</th>
                                             <th>Status</th>
                                             <th>Date</th>
