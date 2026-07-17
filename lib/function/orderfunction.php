@@ -37,13 +37,14 @@ class Order extends Main
             // Insert the order
             $sqlOrder = $this->dbResult->prepare(
                 "INSERT INTO orders_tbl
-                    (orderid, customer_name, phone, email, address, city, postal_code, notes, payment_method, subtotal, delivery_fee, total, order_status)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')"
+                    (orderid, customer_id, customer_name, phone, email, address, city, postal_code, notes, payment_method, subtotal, delivery_fee, total, order_status)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')"
             );
 
             $sqlOrder->bind_param(
-                "sssssssssddd",
+                "ssssssssssddd",
                 $orderid,
+                $customer['cusid'],
                 $customer['fullname'],
                 $customer['phone'],
                 $customer['email'],
@@ -92,7 +93,6 @@ class Order extends Main
             $this->dbResult->commit();
 
             return ['status' => 'success', 'orderid' => $orderid, 'message' => 'Order placed successfully'];
-
         } catch (Exception $e) {
             $this->dbResult->rollback();
             return ['status' => 'error', 'orderid' => null, 'message' => $e->getMessage()];

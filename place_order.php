@@ -9,6 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 // Collect + sanitize customer details
 $customer = [
+    'cusid'       => trim($_POST['cusid'] ?? ''),
     'fullname'       => trim($_POST['fullname'] ?? ''),
     'phone'          => trim($_POST['phone'] ?? ''),
     'email'          => trim($_POST['email'] ?? ''),

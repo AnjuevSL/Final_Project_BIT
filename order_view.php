@@ -1,7 +1,8 @@
 <?php
 require_once 'lib/function/orderfunction.php';
 
-function e($string) {
+function e($string)
+{
     return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
 }
 
@@ -34,14 +35,53 @@ $order = $orderid !== '' ? $orderObj->getOrderById($orderid) : null;
             </div>
         <?php else: ?>
 
-            <div class="checkout-card text-center mb-4">
-                <h2 class="text-success">Thank you, <?= e($order['customer_name']) ?>!</h2>
-                <p class="text-muted">Your order has been placed successfully.</p>
-                <p><strong>Order ID:</strong> <?= e($order['orderid']) ?></p>
-                <p><strong>Payment Method:</strong>
-                    <?= $order['payment_method'] === 'cod' ? 'Cash on Delivery' : 'Bank Transfer' ?>
-                </p>
-                <p><strong>Status:</strong> <span class="text-capitalize"><?= e($order['order_status']) ?></span></p>
+            <div class="checkout-card mb-4 d-flex justify-content-between">
+
+                <!-- Order Details -->
+                <div>
+                    <h5 class="mb-3 checkout-section-title">Order Details</h5>
+
+                    <p><strong>Order ID:</strong> <?= e($order['orderid']) ?></p>
+
+                    <p><strong>Order Date:</strong>
+                        <?= e($order['created_at']) ?>
+                    </p>
+
+                    <p><strong>Payment Method:</strong>
+                        <?= $order['payment_method'] === 'cod' ? 'Cash on Delivery' : 'Bank Transfer' ?>
+                    </p>
+
+                    <p><strong>Status:</strong>
+                        <span class="text-capitalize">
+                            <?= e($order['order_status']) ?>
+                        </span>
+                    </p>
+                </div>
+
+
+                <!-- Customer Details -->
+                <div>
+                    <h5 class="mb-3 checkout-section-title">Customer Details</h5>
+
+                    <p><strong>Name:</strong>
+                        <?= e($order['customer_name']) ?>
+                    </p>
+
+                    <p><strong>Phone:</strong>
+                        <?= e($order['phone']) ?>
+                    </p>
+
+                    <p><strong>Email:</strong>
+                        <?= e($order['email']) ?>
+                    </p>
+
+                    <p><strong>Address:</strong>
+                        <?= e($order['address']) ?>,
+                        <?= e($order['city']) ?>
+                    </p>
+
+                </div>
+
             </div>
 
             <div class="checkout-card">
@@ -76,7 +116,7 @@ $order = $orderid !== '' ? $orderObj->getOrderById($orderid) : null;
             </div>
 
             <div class="text-center mt-4">
-                <a href="shop.php" class="btn btn-outline-dark">Continue Shopping</a>
+                <a href="my_orders.php" class="btn btn-outline-dark">Back to All Orders</a>
             </div>
 
         <?php endif; ?>

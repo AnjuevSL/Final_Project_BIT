@@ -66,8 +66,8 @@ class Customer extends Main
             }
         }
         $updateCustomer = $this->dbResult->prepare("UPDATE customer_tbl JOIN login_tbl ON customer_tbl.customerid = login_tbl.loginid 
-SET customerEmail = ?, loginEmail = ?, 
-customerName = ?, customerPhone = ?, customerNIC = ?, customerGender = ?, customerBirthday = ? WHERE customerid = ?");
+        SET customerEmail = ?, loginEmail = ?, 
+            customerName = ?, customerPhone = ?, customerNIC = ?, customerGender = ?, customerBirthday = ? WHERE customerid = ?");
 
         $updateCustomer->bind_param("ssssssss", $email, $email, $name, $phone, $nic, $gender, $birthday, $userid);
 
@@ -232,5 +232,20 @@ customerName = ?, customerPhone = ?, customerNIC = ?, customerGender = ?, custom
         $deletecustomer->close();
 
         $sqlinsert->close();
+    }
+
+    public function getCustomerOrders($customerId)
+    {
+        $sql = $this->dbResult->prepare("
+            SELECT *
+            FROM orders_tbl
+            WHERE customer_id = ?
+            ORDER BY created_at DESC
+        ");
+
+        $sql->bind_param("s", $customerId);
+        $sql->execute();
+
+        return $sql->get_result()->fetch_all(MYSQLI_ASSOC);
     }
 }
