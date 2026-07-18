@@ -1,15 +1,13 @@
 <?php
 require_once 'lib/function/orderfunction.php';
 
-// Only accept POST requests
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: checkout.php');
     exit;
 }
 
-// Collect + sanitize customer details
 $customer = [
-    'cusid'       => trim($_POST['cusid'] ?? ''),
+    'cusid'          => trim($_POST['cusid'] ?? ''),
     'fullname'       => trim($_POST['fullname'] ?? ''),
     'phone'          => trim($_POST['phone'] ?? ''),
     'email'          => trim($_POST['email'] ?? ''),
@@ -20,7 +18,6 @@ $customer = [
     'payment_method' => trim($_POST['payment_method'] ?? 'cod'),
 ];
 
-// Basic validation
 $errors = [];
 
 if ($customer['fullname'] === '') $errors[] = 'Full name is required';
@@ -29,7 +26,25 @@ if (!filter_var($customer['email'], FILTER_VALIDATE_EMAIL)) $errors[] = 'Valid e
 if ($customer['address'] === '') $errors[] = 'Delivery address is required';
 if ($customer['city'] === '')    $errors[] = 'City is required';
 
-// Decode the cart JSON sent from checkout.js
+// If bank transfer selected, slip upload is mandatory
+$slipFile = null;
+if ($customer['payment_method'] === 'bank_transfer') {
+    if (!isset($_FILES['payment_slip']) || $_FILES['payment_slip']['error'] !== UPLOAD_ERR_OK) {
+        $errors[] = 'Please upload your bank transfer slip';
+    } else {
+        $allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+        $fileType = mime_content_type($_FILES['payment_slip']['tmp_name']);
+
+        if (!in_array($fileType, $allowedTypes)) {
+            $errors[] = 'Slip must be an image (jpg/png) or PDF file';
+        } elseif ($_FILES['payment_slip']['size'] > 5 * 1024 * 1024) { // 5MB limit
+            $errors[] = 'Slip file is too large (max 5MB)';
+        } else {
+            $slipFile = $_FILES['payment_slip'];
+        }
+    }
+}
+
 $cart = json_decode($_POST['cart_data'] ?? '[]', true);
 
 if (!is_array($cart) || empty($cart)) {
@@ -37,7 +52,6 @@ if (!is_array($cart) || empty($cart)) {
 }
 
 if (!empty($errors)) {
-    // Something is wrong — send the user back with the error shown
     $errorMsg = urlencode(implode(', ', $errors));
     header("Location: checkout.php?error={$errorMsg}");
     exit;
@@ -48,6 +62,18 @@ $orderObj = new Order;
 $result = $orderObj->placeOrder($customer, $cart, 350.00);
 
 if ($result['status'] === 'success') {
+
+    // If bank transfer, save the slip and link it to the order
+    if ($customer['payment_method'] === 'bank_transfer' && $slipFile !== null) {
+        $uploadResult = $orderObj->uploadPaymentSlip($result['orderid'], $slipFile);
+
+        if ($uploadResult['status'] !== 'success') {
+            // Order created but slip failed — still redirect, mention issue
+            header('Location: order_confirmation.php?orderid=' . urlencode($result['orderid']) . '&slip_error=1');
+            exit;
+        }
+    }
+
     header('Location: order_confirmation.php?orderid=' . urlencode($result['orderid']));
     exit;
 } else {
