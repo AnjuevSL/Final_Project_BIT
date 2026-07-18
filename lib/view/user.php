@@ -26,7 +26,7 @@ if (isset($_SESSION['user'])) {
 
 <head>
 
-  <title>User Management</title>
+  <title>Admin User Management</title>
 
   <?php
   include_once('common.php')
@@ -40,7 +40,7 @@ if (isset($_SESSION['user'])) {
         <!--begin::Row-->
         <div class="row">
           <div class="col-sm-6">
-            <h3 class="mb-0">User Management</h3>
+            <h3 class="mb-0">Admin User Management</h3>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-end">
@@ -65,7 +65,7 @@ if (isset($_SESSION['user'])) {
         <div class="row">
           <div class="col-md-12">
             <div class="d-flex justify-content-between align-items-center mb-3 ">
-              <h4 class="mb-0">All Users</h4>
+              <h4 class="mb-0">All Admin Users</h4>
               <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addSupplierModal">
                 <i class="bi bi-plus-circle"></i> Add User
               </button>
@@ -73,10 +73,10 @@ if (isset($_SESSION['user'])) {
             <table class="table table-bordered table-striped">
               <thead>
                 <tr>
-                  <th scope="col">User Name</th>
+                  <th scope="col">ID</th>
                   <th scope="col">Email Address</th>
-                  <th scope="col">NIC</th>
-                  <th scope="col">Phone Number</th>
+                  <th scope="col">Play Role</th>
+                  <th scope="col">Status</th>
                   <th scope="col">Action</th>
                 </tr>
               </thead>
@@ -91,11 +91,36 @@ if (isset($_SESSION['user'])) {
       <!--end::App Content-->
   </main>
 
+  <div class="modal" id="addSupplierModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add Admin User</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div>
+            <label for="addAdminEmail" class="form-label mt-4">Email address</label>
+            <input type="email" class="form-control" id="addAdminEmail" placeholder="Enter email">
+          </div>
+          <div>
+            <label for="addAdminPassword" class="form-label mt-4">Password</label>
+            <input type="password" class="form-control" id="addAdminPassword" placeholder="Enter password">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" id="addAdminBtn" class="btn btn-primary">Add Admin</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="modal" id="edituserdata" tabindex="-1">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Edit User Data</h5>
+          <h5 class="modal-title">Edit Admin Data</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
@@ -105,44 +130,14 @@ if (isset($_SESSION['user'])) {
             <input type="email" class="form-control" id="email" placeholder="Enter email">
           </div>
           <div>
-            <label for="fullName" class="form-label mt-4">Full name</label>
-            <input type="name" class="form-control" id="fullName" placeholder="Enter name">
-          </div>
-          <div>
-            <label for="telNo" class="form-label mt-4">Tel No</label>
-            <input type="name" class="form-control" id="telNo" placeholder="Enter Tel no">
-          </div>
-          <div>
-            <label for="exampleInputNIC" class="form-label mt-4">NIC</label>
-            <input type="name" class="form-control" id="nic" placeholder="Enter NIC">
-          </div>
-          <div>
-            <div class="row">
-              <div class="col-8">
-                <label for="birthday" class="form-label mt-4">Birthday</label>
-                <input type="date" class="form-control" id="birthday">
-              </div>
-              <div class="col-4">
-                <label for="age" class="form-label mt-4 ">Age</label>
-                <input type="text" class="form-control" id="age" read only>
-              </div>
-            </div>
-
-          </div>
-          <div>
-            <label for="exampleSelectgender" class="form-label mt-4">Gender</label>
-            <select class="form-select" id="gender" fdprocessedid="mbstcc">
-              <option disable selected value="">Select Gender</option>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-            </select>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="button" id="editbtn" class="btn btn-primary">Save changes</button>
+            <label for="editPassword" class="form-label mt-4">Password <small class="text-muted">(leave blank to keep unchanged)</small></label>
+            <input type="password" class="form-control" id="editPassword" placeholder="Enter new password">
           </div>
         </div>
-
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" id="editbtn" class="btn btn-primary">Save changes</button>
+        </div>
       </div>
     </div>
   </div>
@@ -153,33 +148,26 @@ if (isset($_SESSION['user'])) {
 
 
   <script>
+    function loadalldata() {
+      $.get("../routes/customer/loaddata.php", {
+        role: 'admin'
+      }, function(res) {
+        $('#userlist').html(res);
+      });
+    }
+
     $(document).ready(function() {
 
-      function loadalldata() {
-        $.get("../routes/customer/loademp.php", function(res) {
-          $('#userlist').html(res);
-        });
-      }
-
       loadalldata();
-
-      function clearform() {
-        $('#InputEmail1').val("");
-        $('#InputName').val("");
-        $('#phone').val("");
-        $('#nic').val("");
-        $('#gender').val("");
-        $('#birthday').val("");
-        $('#editid').val("");
-      }
 
       $("#searchtext").on('input', function() {
 
         $searchtext = $(this).val();
 
         if ($searchtext != "") {
-          $.get("../routes/customer/loadempsearch.php", {
-            searchtext: $searchtext
+          $.get("../routes/customer/loaddatasearch.php", {
+            searchtext: $searchtext,
+            role: 'admin'
           }, function(res) {
             $('#userlist').html(res);
           });
@@ -189,122 +177,68 @@ if (isset($_SESSION['user'])) {
 
       })
 
-      $('#birthday').on('change', function() {
-
-        const birthday = new Date($(this).val());
-        const todayday = new Date();
-        let age = todayday.getFullYear() - birthday.getFullYear();
-
-        $('#age').val(age);
-      });
-
-      $('#editbtn').on('click', function() {
-        let email = $('#email').val();
-        let name = $('#fullName').val();
-        let phone = $('#telNo').val();
-        let nic = $('#nic').val();
-        let gender = $('#gender').val();
-        let birthday = $('#birthday').val();
-        let userid = $('#editid').val();
-
-        console.log(phone);
-        let error = 0;
-
-        if (email == "") {
-          // alert("Please Add Email");
-          $('#email').attr('class', 'form-control is-invalid');
-
-          Swal.fire({
-            title: "Insert Email",
-            text: "Email is empty!",
-            icon: "error"
-          });
-          error++;
-        } else {
-          $('#email').attr('class', 'form-control is-valid');
-        }
-        if (name == "") {
-          $('#fullName').attr('class', 'form-control is-invalid');
-          error++;
-        } else {
-          $('#fullName').attr('class', 'form-control is-valid');
-        }
-
-        if (phone == "" || phone.length < 10) {
-          $('#telNo').attr('class', 'form-control is-invalid');
-          error++;
-        } else {
-          $('#telNo').attr('class', 'form-control is-valid');
-
-        }
-
-        if (nic == "" || nic.length < 10) {
-          $('#nic').attr('class', 'form-control is-invalid');
-          error++;
-        } else {
-          $('#nic').attr('class', 'form-control is-valid');
-        }
-
-        console.log(phone);
-
-        if (gender == null || gender == "") {
-          $('#gender').attr('class', 'form-control is-invalid');
-          error++;
-        } else {
-          $('#gender').attr('class', 'form-control is-valid');
-        }
-
-        if (error == 0) {
-          // alert('success!');
-
-          $.ajax({
-            type: 'POST',
-            url: '../routes/customer/editCustomer.php',
-            data: {
-              customerEmail: email,
-              customerid: userid,
-              customerName: name,
-              customerPhone: phone,
-              customerNIC: nic,
-              customerGender: gender,
-              customerBirthday: birthday
-            },
-            success: function(respons) {
-
-              if ($.trim(respons) == "success") {
-                $('#edituserdata').modal('hide');
-                loadalldata();
-                clearform();
-                Swal.fire({
-
-                  title: "Successfully Updated",
-                  text: "user Update successfully",
-                  icon: "success"
-                });
-
-              } else if (respons == "Phone number Exists") {
-                Swal.fire({
-                  title: "Phone number",
-                  text: "Phone number Exists",
-                  icon: "info"
-                });
-              } else {
-                Swal.fire({
-                  title: "Error Updating",
-                  text: "Something Went Wrong",
-                  icon: "error"
-                });
-
-              }
-            },
-            error: function() {
-              // error handling
-            }
-          })
-        }
-      })
-
     })
+
+    $('#addAdminBtn').on('click', function() {
+      let email = $('#addAdminEmail').val();
+      let password = $('#addAdminPassword').val();
+      let error = 0;
+
+      if (email == "") {
+        $('#addAdminEmail').attr('class', 'form-control is-invalid');
+        error++;
+      } else {
+        $('#addAdminEmail').attr('class', 'form-control is-valid');
+      }
+
+      if (password == "" || password.length < 6) {
+        $('#addAdminPassword').attr('class', 'form-control is-invalid');
+        error++;
+      } else {
+        $('#addAdminPassword').attr('class', 'form-control is-valid');
+      }
+
+      if (error == 0) {
+        $.ajax({
+          type: 'POST',
+          url: '../routes/customer/addAdmin.php',
+          data: {
+            adminEmail: email,
+            adminPassword: password
+          },
+          success: function(respons) {
+            respons = $.trim(respons);
+
+            if (respons == "success") {
+              $('#addSupplierModal').modal('hide');
+              $('#addAdminEmail').val("");
+              $('#addAdminPassword').val("");
+              loadalldata();
+              Swal.fire({
+                title: "Successfully Added",
+                text: "Admin user added successfully",
+                icon: "success"
+              });
+            } else if (respons == "Email Exists") {
+              Swal.fire({
+                title: "Email",
+                text: "Email already exists",
+                icon: "info"
+              });
+            } else {
+              Swal.fire({
+                title: "Error Adding",
+                text: "Something Went Wrong",
+                icon: "error"
+              });
+            }
+          },
+          error: function() {
+            // error handling
+          }
+        })
+      }
+    });
 
     $(document).on('click', '.deletebtn', function() {
 
@@ -324,7 +258,8 @@ if (isset($_SESSION['user'])) {
           $.get("../routes/customer/deleteempbyid.php", {
             userid: customerid
           }, function(res) {
-            if (res == "success") {
+            if ($.trim(res) == "success") {
+              loadalldata();
               Swal.fire({
                 title: "Deleted!",
                 text: "Your file has been deleted.",
@@ -363,14 +298,12 @@ if (isset($_SESSION['user'])) {
             $.get("../routes/customer/deactivatebyid.php", {
               userid: customerid
             }, function(res) {
-              alert(res);
               if ($.trim(res) == "success") {
+                loadalldata();
                 Swal.fire({
                   title: "Deactivated!",
                   text: "Account has been deactivated.",
                   icon: "success"
-                }).then(() => {
-                  location.reload();
                 });
               } else {
                 Swal.fire({
@@ -398,7 +331,8 @@ if (isset($_SESSION['user'])) {
             $.get("../routes/customer/deactivatebyid.php", {
               userid: customerid
             }, function(res) {
-              if (res == "success") {
+              if ($.trim(res) == "success") {
+                loadalldata();
                 Swal.fire({
                   title: "Activated!",
                   text: "Account has been activated.",
@@ -419,29 +353,83 @@ if (isset($_SESSION['user'])) {
     })
 
 
+    $('#editbtn').on('click', function() {
+      let email = $('#email').val();
+      let password = $('#editPassword').val();
+      let userid = $('#editid').val();
+
+      let error = 0;
+
+      if (email == "") {
+        $('#email').attr('class', 'form-control is-invalid');
+
+        Swal.fire({
+          title: "Insert Email",
+          text: "Email is empty!",
+          icon: "error"
+        });
+        error++;
+      } else {
+        $('#email').attr('class', 'form-control is-valid');
+      }
+
+      if (error == 0) {
+
+        $.ajax({
+          type: 'POST',
+          url: '../routes/customer/editAdmin.php',
+          data: {
+            loginid: userid,
+            adminEmail: email,
+            adminPassword: password
+          },
+          success: function(respons) {
+            respons = $.trim(respons);
+
+            if (respons == "success") {
+              $('#edituserdata').modal('hide');
+              $('#editPassword').val("");
+              loadalldata();
+              Swal.fire({
+                title: "Successfully Updated",
+                text: "Admin updated successfully",
+                icon: "success"
+              });
+
+            } else if (respons == "Email Exists") {
+              Swal.fire({
+                title: "Email",
+                text: "Email already exists",
+                icon: "info"
+              });
+            } else {
+              Swal.fire({
+                title: "Error Updating",
+                text: "Something Went Wrong",
+                icon: "error"
+              });
+
+            }
+          },
+          error: function() {
+            // error handling
+          }
+        })
+      }
+    })
+
     function edituser($userid) {
 
       $('#editid').val($userid);
 
-      $.get("../routes/customer/loadempbyid.php", {
+      $.get("../routes/customer/loadadminbyid.php", {
         userid: $userid
       }, function(res) {
 
         var jdata = jQuery.parseJSON(res);
 
-        $('#email').val(jdata.customerEmail);
-        $('#fullName').val(jdata.customerName);
-        $('#telNo').val(jdata.customerPhone);
-        $('#nic').val(jdata.customerNIC);
-        $('#birthday').val(jdata.customerBirthday);
-        $('#gender').val(jdata.customerGender);
-
-        const birthday = new Date(jdata.customerBirthday);
-        const todayday = new Date();
-        let age = todayday.getFullYear() - birthday.getFullYear();
-
-        $('#age').val(age);
-
+        $('#email').val(jdata.loginEmail);
+        $('#editPassword').val("");
 
         $('#edituserdata').modal('show');
 

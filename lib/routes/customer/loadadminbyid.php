@@ -5,7 +5,9 @@ include_once('../../function/customerFunction.php');
 
 $customerObj = new Customer();
 
-$result = $customerObj->loaddata();
+$id = $_GET['userid'];
+
+$result = $customerObj->loaddataadminbyid($id);
 
 echo($result);
 

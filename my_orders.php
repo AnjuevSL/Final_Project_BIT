@@ -53,13 +53,18 @@ $orders = $custObj->getCustomerOrders($customer['customerid']);
         </ul>
 
         <div class="checkout-card">
-            <h5 class="checkout-section-title mb-3">My Orders</h5>
 
             <?php if (empty($orders)) : ?>
-                <p class="text-center text-muted">
-                    Order eka thawama nathi wela. <a href="shop.php">Start shopping</a>.
-                </p>
+                <div class="p-10">
+                    <h5 class="checkout-section-title text-center mb-3">My Orders</h5>
+                    <p class="text-center text-muted">
+                        You don't have any orders yet.
+                        <a href="shop.php">Browse our products</a> and place your first order!
+                    </p>
+                </div>
             <?php else : ?>
+                <h5 class="checkout-section-title mb-3">My Orders</h5>
+
                 <div class="table-responsive">
                     <table class="table table-bordered align-middle">
                         <thead>

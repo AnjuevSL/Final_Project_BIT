@@ -21,12 +21,10 @@ class Auth extends Main
 
             if ($nor > 0) {
 
-                $newpassword = md5($password);
-
                 $row = $sqlresult->fetch_assoc();
                 $dbpassword = $row['loginPassword'];
 
-                if ($newpassword == $dbpassword) {
+                if (password_verify($password, $dbpassword)) {
 
                     $loginstatus = $row['loginStatus'];
 

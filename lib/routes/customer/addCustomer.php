@@ -2,7 +2,7 @@
 include_once('../../function/customerFunction.php');
 
 $email = $_POST['customerEmail'];
-$password = md5($_POST['customerPassword']);
+$password = $_POST['customerPassword'];  
 $name = $_POST['customerName'];
 $phone = $_POST['customerPhone'];
 $nic = $_POST['customerNIC'];

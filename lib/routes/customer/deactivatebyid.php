@@ -1,22 +1,14 @@
 <?php
-echo "File Loaded <br>";
 
+//include the function page
 include_once('../../function/customerFunction.php');
-
-echo "Function File Loaded <br>";
 
 $customerObj = new Customer();
 
-echo "Object Created <br>";
+$id = $_GET['userid'];
 
-echo "<pre>";
-print_r($_GET);
-echo "</pre>";
+$result = $customerObj->deactivatebyid($id);
 
-$userid = $_GET['userid'];
+echo($result);
 
-echo "User ID = " . $userid . "<br>";
-
-$result = $customerObj->deactivatebyid($userid);
-
-echo "Result = " . $result;
+?>
