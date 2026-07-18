@@ -1,4 +1,3 @@
-
 <?php
 
 //include the function page
@@ -6,9 +5,10 @@ include_once('../../function/customerFunction.php');
 
 $customerObj = new Customer();
 
-$searchtext = $_GET['searchtext'];
+$email = $_POST['adminEmail'];
+$password = $_POST['adminPassword'];
 
-$result = $customerObj->loaddatasearch($searchtext);
+$result = $customerObj->addAdmin($email, $password);
 
 echo($result);
 

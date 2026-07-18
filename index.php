@@ -307,7 +307,7 @@
                         } else {
                             Swal.fire({
                                 title: "Err",
-                                text: "Phone number Exists",
+                                text: respons,
                                 icon: "info"
                             });
                         }
