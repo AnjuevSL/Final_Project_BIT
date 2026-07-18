@@ -50,8 +50,7 @@ if (isset($_SESSION['user']) && isset($_SESSION['usertype']) && $_SESSION['usert
                 <div class="checkout-card">
                     <h5 class="checkout-section-title">Delivery Details</h5>
 
-                    <form id="checkoutForm" action="place_order.php" method="POST">
-
+                    <form id="checkoutForm" action="place_order.php" method="POST" enctype="multipart/form-data">
                         <div class="row g-3">
                             <!-- <div class="col-md-6"> -->
                             <!-- <label class="form-label">Customer Id</label> -->
@@ -96,6 +95,25 @@ if (isset($_SESSION['user']) && isset($_SESSION['usertype']) && $_SESSION['usert
                         <div class="payment-option">
                             <input type="radio" name="payment_method" id="bank" value="bank_transfer">
                             <label for="bank">Bank Transfer</label>
+                        </div>
+
+                        <!-- Bank transfer details + slip upload — hidden until "Bank Transfer" is selected -->
+                        <div id="bankTransferSection" class="bank-transfer-box mt-3" style="display:none;">
+                            <div class="bank-details-note mb-3">
+                                <strong>Bank Details:</strong>
+                                <p class="mb-1">Bank: Commercial Bank</p>
+                                <p class="mb-1">Account Name: Malee Dress Point</p>
+                                <p class="mb-1">Account Number: 1234567890</p>
+                                <p class="mb-0">Branch: Horana</p>
+                            </div>
+
+                            <label class="form-label">Upload Bank Slip (Image or PDF) <span class="text-danger">*</span></label>
+                            <input type="file" name="payment_slip" id="paymentSlip" class="form-control" accept="image/jpeg,image/png,image/jpg,application/pdf">
+                            <small class="text-muted">Accepted formats: JPG, PNG, PDF — Max size 5MB</small>
+                            <div id="slipPreview" class="mt-2"></div>
+
+                            <label class="form-label mt-3">Note (optional)</label>
+                            <textarea name="payment_note" id="paymentNote" class="form-control" rows="2" placeholder="E.g. transferred amount, reference number"></textarea>
                         </div>
 
                         <!-- Cart data is injected here as JSON before submit (see checkout.js) -->

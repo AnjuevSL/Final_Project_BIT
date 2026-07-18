@@ -83,3 +83,34 @@
   padding-top: 10px;
   margin-top: 8px;
 }
+.bank-transfer-box {
+  border: 1px solid #e0d5c8;
+  background: #faf6f0;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.bank-details-note {
+  background: #fff;
+  border-left: 3px solid #b08d57;
+  padding: 10px 14px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.slip-thumb {
+  max-width: 150px;
+  max-height: 150px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  margin-top: 8px;
+}
+
+.pdf-badge {
+  display: inline-block;
+  background: #eee;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  margin-top: 8px;
+}

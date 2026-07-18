@@ -76,6 +76,7 @@ if (isset($_SESSION['user'])) {
                                             <th>Customer Name</th>
                                             <th>Total</th>
                                             <th>Status</th>
+                                            <th>Payment Mathod</th>
                                             <th>Date</th>
                                             <th>Action</th>
                                         </tr>
@@ -93,6 +94,7 @@ if (isset($_SESSION['user'])) {
                                             <th>Customer</th>
                                             <th>Total</th>
                                             <th>Status</th>
+                                            <th>Payment Mathod</th>
                                             <th>Date</th>
                                             <th>Action</th>
                                         </tr>
@@ -110,6 +112,7 @@ if (isset($_SESSION['user'])) {
                                             <th>Customer</th>
                                             <th>Total</th>
                                             <th>Status</th>
+                                            <th>Payment Mathod</th>
                                             <th>Date</th>
                                             <th>Action</th>
                                         </tr>
@@ -127,6 +130,7 @@ if (isset($_SESSION['user'])) {
                                             <th>Customer</th>
                                             <th>Total</th>
                                             <th>Status</th>
+                                            <th>Payment Mathod</th>
                                             <th>Date</th>
                                             <th>Action</th>
                                         </tr>
@@ -144,6 +148,7 @@ if (isset($_SESSION['user'])) {
                                             <th>Customer</th>
                                             <th>Total</th>
                                             <th>Status</th>
+                                            <th>Payment Mathod</th>
                                             <th>Date</th>
                                             <th>Action</th>
                                         </tr>
@@ -161,6 +166,7 @@ if (isset($_SESSION['user'])) {
                                             <th>Customer</th>
                                             <th>Total</th>
                                             <th>Status</th>
+                                            <th>Payment Mathod</th>
                                             <th>Date</th>
                                             <th>Action</th>
                                         </tr>
@@ -178,6 +184,7 @@ if (isset($_SESSION['user'])) {
                                             <th>Customer</th>
                                             <th>Total</th>
                                             <th>Status</th>
+                                            <th>Payment Mathod</th>
                                             <th>Date</th>
                                             <th>Action</th>
                                         </tr>
@@ -241,6 +248,33 @@ if (isset($_SESSION['user'])) {
         </div>
     </div>
 
+    <!-- Verify Payment Modal -->
+    <div class="modal fade" id="verifyPaymentModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Verify Bank Transfer Payment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="verifyOrderId">
+                    <input type="hidden" id="verifySlipId">
+                    <div id="slipContent">Loading...</div>
+
+                    <div class="mt-3">
+                        <label class="form-label">Rejection Reason (only if rejecting)</label>
+                        <textarea class="form-control" id="rejectReason" rows="2" placeholder="E.g. amount mismatch, unclear slip"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger" id="rejectSlipBtn">Reject</button>
+                    <button type="button" class="btn btn-success" id="approveSlipBtn">Approve</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="../../js/jquery.js"></script>
     <script>
         $(document).ready(function() {
@@ -252,6 +286,38 @@ if (isset($_SESSION['user'])) {
             loadOrdersByStatus('hold');
             loadOrdersByStatus('cancelled');
 
+            function buildActionButtons(order) {
+                var needsVerification = (order.payment_method === 'bank_transfer' && parseInt(order.payment_verified) === 0);
+
+                var viewBtn = '<button class="btn btn-sm btn-info btn-view" data-id="' + order.orderid + '">View</button> ';
+
+                if (needsVerification) {
+                    return viewBtn +
+                        '<button class="btn btn-sm btn-secondary" disabled title="Approve payment slip first">Change Status</button> ' +
+                        '<button class="btn btn-sm btn-success btn-verify-payment" data-id="' + order.orderid + '">Verify Payment</button>';
+                } else {
+                    return viewBtn +
+                        '<button class="btn btn-sm btn-warning btn-change-status" data-id="' + order.orderid + '">Change Status</button>';
+                }
+            }
+
+            function buildRow(order) {
+                var statusColor = getStatusColor(order.order_status);
+                var paymentBadge = order.payment_method === 'bank_transfer' ?
+                    (parseInt(order.payment_verified) === 0 ?
+                        '<span class="badge bg-danger">Bank Transfer (Unverified)</span>' :
+                        '<span class="badge bg-success">Bank Transfer (Verified)</span>') :
+                    '<span class="badge bg-secondary">Cash on Delivery</span>';
+
+                return '<tr><td>' + order.orderid + '</td>' +
+                    '<td>' + order.customer_name + '</td>' +
+                    '<td>Rs.' + parseFloat(order.total).toFixed(2) + '</td>' +
+                    '<td><span class="badge ' + statusColor + '">' + formatStatus(order.order_status) + '</span></td>' +
+                    '<td>' + paymentBadge + '</td>' +
+                    '<td>' + new Date(order.created_at).toLocaleDateString() + '</td>' +
+                    '<td>' + buildActionButtons(order) + '</td></tr>';
+            }
+
             function loadAllOrders() {
                 $.ajax({
                     url: "../routes/order/vieworder.php",
@@ -260,11 +326,10 @@ if (isset($_SESSION['user'])) {
                     success: function(orders) {
                         var rows = '';
                         if (!orders || orders.length === 0) {
-                            rows = '<tr><td colspan="6" class="text-center">No orders found</td></tr>';
+                            rows = '<tr><td colspan="7" class="text-center">No orders found</td></tr>';
                         } else {
                             $.each(orders, function(index, order) {
-                                var statusColor = getStatusColor(order.order_status);
-                                rows += '<tr><td>' + order.orderid + '</td><td>' + order.customer_name + '</td><td>Rs.' + parseFloat(order.total).toFixed(2) + '</td><td><span class="badge ' + statusColor + '">' + formatStatus(order.order_status) + '</span></td><td>' + new Date(order.created_at).toLocaleDateString() + '</td><td><button class="btn btn-sm btn-info btn-view" data-id="' + order.orderid + '">View</button> <button class="btn btn-sm btn-warning btn-change-status" data-id="' + order.orderid + '">Change Status</button></td></tr>';
+                                rows += buildRow(order);
                             });
                         }
                         $('#allOrdersTableBody').html(rows);
@@ -280,11 +345,10 @@ if (isset($_SESSION['user'])) {
                     success: function(orders) {
                         var rows = '';
                         if (!orders || orders.length === 0) {
-                            rows = '<tr><td colspan="6" class="text-center">No orders found</td></tr>';
+                            rows = '<tr><td colspan="7" class="text-center">No orders found</td></tr>';
                         } else {
                             $.each(orders, function(index, order) {
-                                var statusColor = getStatusColor(order.order_status);
-                                rows += '<tr><td>' + order.orderid + '</td><td>' + order.customer_name + '</td><td>Rs.' + parseFloat(order.total).toFixed(2) + '</td><td><span class="badge ' + statusColor + '">' + formatStatus(order.order_status) + '</span></td><td>' + new Date(order.created_at).toLocaleDateString() + '</td><td><button class="btn btn-sm btn-info btn-view" data-id="' + order.orderid + '">View</button> <button class="btn btn-sm btn-warning btn-change-status" data-id="' + order.orderid + '">Change Status</button></td></tr>';
+                                rows += buildRow(order);
                             });
                         }
                         var tableId = '#' + status + 'TableBody';
@@ -319,6 +383,17 @@ if (isset($_SESSION['user'])) {
                 return colorMap[status] || 'bg-secondary';
             }
 
+            function reloadAllTables() {
+                loadAllOrders();
+                loadOrdersByStatus('billing');
+                loadOrdersByStatus('ready_to_delivery');
+                loadOrdersByStatus('delivery');
+                loadOrdersByStatus('delivered');
+                loadOrdersByStatus('hold');
+                loadOrdersByStatus('cancelled');
+            }
+
+            // ===== View Order Details =====
             $(document).on('click', '.btn-view', function() {
                 var orderId = $(this).data('id');
                 $.ajax({
@@ -351,6 +426,7 @@ if (isset($_SESSION['user'])) {
                 });
             });
 
+            // ===== Change Status =====
             $(document).on('click', '.btn-change-status', function() {
                 var orderId = $(this).data('id');
                 $('#statusOrderId').val(orderId);
@@ -373,13 +449,10 @@ if (isset($_SESSION['user'])) {
                         if (response.status === 'success') {
                             alert('Order status updated successfully.');
                             $('#changeStatusModal').modal('hide');
-                            loadAllOrders();
-                            loadOrdersByStatus('billing');
-                            loadOrdersByStatus('ready_to_delivery');
-                            loadOrdersByStatus('delivery');
-                            loadOrdersByStatus('delivered');
-                            loadOrdersByStatus('hold');
-                            loadOrdersByStatus('cancelled');
+                            reloadAllTables();
+                        } else if (response.status === 'unverified') {
+                            alert('Please approve the payment slip before changing status.');
+                            $('#changeStatusModal').modal('hide');
                         } else {
                             alert('Could not update order status.');
                         }
@@ -389,6 +462,83 @@ if (isset($_SESSION['user'])) {
                     }
                 });
             });
+
+            // ===== Verify Payment =====
+            $(document).on('click', '.btn-verify-payment', function() {
+                var orderId = $(this).data('id');
+                $('#verifyOrderId').val(orderId);
+                $('#slipContent').html('Loading...');
+                $('#rejectReason').val('');
+
+                $.ajax({
+                    url: "../routes/order/getslipbyorder.php?orderId=" + orderId,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(slip) {
+                        if (!slip || !slip.id) {
+                            $('#slipContent').html('<p class="text-danger">No slip uploaded for this order.</p>');
+                            return;
+                        }
+                        $('#verifySlipId').val(slip.id);
+
+                        var previewHtml = '';
+                        if (slip.file_type === 'pdf') {
+                            previewHtml = '<a href="../../' + slip.file_path + '" target="_blank" class="btn btn-outline-dark">Open PDF Slip</a>';
+                        } else {
+                            previewHtml = '<img src="../../' + slip.file_path + '" class="img-fluid rounded border" style="max-height:400px;">';
+                        }
+
+                        $('#slipContent').html(
+                            '<div><strong>Order:</strong> ' + slip.orderid + '</div>' +
+                            '<div><strong>Uploaded:</strong> ' + new Date(slip.uploaded_at).toLocaleString() + '</div>' +
+                            '<div class="mt-3">' + previewHtml + '</div>'
+                        );
+                    }
+                });
+
+                $('#verifyPaymentModal').modal('show');
+            });
+
+            $('#approveSlipBtn').on('click', function() {
+                reviewSlip('approved');
+            });
+
+            $('#rejectSlipBtn').on('click', function() {
+                var reason = $('#rejectReason').val().trim();
+                if (!reason) {
+                    alert('Please provide a rejection reason.');
+                    return;
+                }
+                reviewSlip('rejected');
+            });
+
+            function reviewSlip(decision) {
+                var slipId = $('#verifySlipId').val();
+                var reason = $('#rejectReason').val();
+
+                $.ajax({
+                    url: "../routes/order/reviewpaymentslip.php",
+                    type: 'POST',
+                    data: {
+                        slipId: slipId,
+                        decision: decision,
+                        reason: reason
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            alert(decision === 'approved' ? 'Payment approved.' : 'Payment rejected.');
+                            $('#verifyPaymentModal').modal('hide');
+                            reloadAllTables();
+                        } else {
+                            alert('Could not update payment status.');
+                        }
+                    },
+                    error: function() {
+                        alert('Something went wrong.');
+                    }
+                });
+            }
         });
     </script>
 
