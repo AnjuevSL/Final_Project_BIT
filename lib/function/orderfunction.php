@@ -158,10 +158,18 @@ class Order extends Main
     public function getAllOrders()
     {
         $sql = $this->dbResult->prepare(
-            "SELECT orderid, customer_name, phone, email, address, city, postal_code, 
-                    subtotal, delivery_fee, total, payment_method, payment_verified, order_status, created_at
-             FROM orders_tbl
-             ORDER BY created_at DESC"
+            "SELECT o.orderid, o.customer_name, o.phone, o.email, o.address, o.city, o.postal_code, 
+                o.subtotal, o.delivery_fee, o.total, o.payment_method, o.payment_verified, 
+                o.order_status, o.created_at,
+                ps.status AS slip_status, ps.uploaded_at AS slip_uploaded_at
+         FROM orders_tbl o
+         LEFT JOIN payment_slips_tbl ps ON ps.id = (
+             SELECT id FROM payment_slips_tbl 
+             WHERE orderid = o.orderid 
+             ORDER BY uploaded_at DESC 
+             LIMIT 1
+         )
+         ORDER BY o.created_at DESC"
         );
         $sql->execute();
         return $sql->get_result()->fetch_all(MYSQLI_ASSOC);
@@ -170,22 +178,25 @@ class Order extends Main
     public function getOrdersByStatus($status)
     {
         $sql = $this->dbResult->prepare(
-            "SELECT orderid, customer_name, phone, email, address, city, postal_code,
-                    subtotal, delivery_fee, total, payment_method, payment_verified, order_status, created_at
-             FROM orders_tbl
-             WHERE order_status = ?
-             ORDER BY created_at DESC"
+            "SELECT o.orderid, o.customer_name, o.phone, o.email, o.address, o.city, o.postal_code,
+                o.subtotal, o.delivery_fee, o.total, o.payment_method, o.payment_verified, 
+                o.order_status, o.created_at,
+                ps.status AS slip_status, ps.uploaded_at AS slip_uploaded_at
+         FROM orders_tbl o
+         LEFT JOIN payment_slips_tbl ps ON ps.id = (
+             SELECT id FROM payment_slips_tbl 
+             WHERE orderid = o.orderid 
+             ORDER BY uploaded_at DESC 
+             LIMIT 1
+         )
+         WHERE o.order_status = ?
+         ORDER BY o.created_at DESC"
         );
         $sql->bind_param("s", $status);
         $sql->execute();
         return $sql->get_result()->fetch_all(MYSQLI_ASSOC);
     }
 
-    /**
-     * UPDATE — change order status (admin action).
-     * Blocks the change if it's a bank_transfer order that hasn't been
-     * payment-verified yet — admin has to approve the slip first.
-     */
     public function updateOrderStatus($orderId, $newStatus)
     {
         $allowedStatuses = ['pending', 'billing', 'ready_to_delivery', 'delivery', 'delivered', 'hold', 'cancelled'];
@@ -311,5 +322,32 @@ class Order extends Main
         $sql->bind_param("s", $orderid);
         $sql->execute();
         return $sql->get_result()->fetch_assoc();
+    }
+
+    public function reuploadPaymentSlip($orderid, $file)
+    {
+        $result = $this->uploadPaymentSlip($orderid, $file);
+
+        if ($result['status'] === 'success') {
+            $update = $this->dbResult->prepare("UPDATE orders_tbl SET payment_verified = 0 WHERE orderid = ?");
+            $update->bind_param("s", $orderid);
+            $update->execute();
+        }
+
+        return $result;
+    }
+
+    public function getAllPaymentSlips()
+    {
+        $sql = $this->dbResult->prepare(
+            "SELECT ps.id, ps.orderid, ps.file_path, ps.file_type, ps.status, 
+                ps.uploaded_at, ps.reviewed_at, ps.reviewed_by, ps.rejection_reason,
+                o.customer_name, o.total, o.order_status
+         FROM payment_slips_tbl ps
+         JOIN orders_tbl o ON o.orderid = ps.orderid
+         ORDER BY ps.uploaded_at DESC"
+        );
+        $sql->execute();
+        return $sql->get_result()->fetch_all(MYSQLI_ASSOC);
     }
 }
