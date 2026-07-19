@@ -314,6 +314,12 @@ $nav_image = '../../assets/woman.png';
                   </a>
                 </li>
                 <li class="nav-item">
+                  <a href="payment_slips.php" class="nav-link" <?php echo $currentpage == 'payment_slips.php][' ? 'active' : ''; ?>>
+                    <i class="nav-icon bi bi-receipt"></i>
+                    <p>Payment Slips</p>
+                  </a>
+                </li>
+                <li class="nav-item">
                   <a href="product.php" class="nav-link" <?php echo $currentpage == 'product.php][' ? 'active' : ''; ?>>
                     <i class="nav-icon bi bi-box-seam-fill"></i>
                     <p>Product Management</p>

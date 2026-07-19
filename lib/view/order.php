@@ -540,6 +540,42 @@ if (isset($_SESSION['user'])) {
                 });
             }
         });
+
+        function buildPaymentBadge(order) {
+            if (order.payment_method !== 'bank_transfer') {
+                return '<span class="badge bg-secondary">Cash on Delivery</span>';
+            }
+
+            var slipBadge = '';
+            switch (order.slip_status) {
+                case 'pending':
+                    slipBadge = '<span class="badge bg-warning text-dark">Slip Pending</span>';
+                    break;
+                case 'approved':
+                    slipBadge = '<span class="badge bg-success">Slip Approved</span>';
+                    break;
+                case 'rejected':
+                    slipBadge = '<span class="badge bg-danger">Slip Rejected</span>';
+                    break;
+                default:
+                    slipBadge = '<span class="badge bg-dark">No Slip</span>';
+            }
+
+            return '<span class="badge bg-info text-dark">Bank Transfer</span><br>' + slipBadge;
+        }
+
+        function buildRow(order) {
+            var statusColor = getStatusColor(order.order_status);
+            var paymentBadge = buildPaymentBadge(order);
+
+            return '<tr><td>' + order.orderid + '</td>' +
+                '<td>' + order.customer_name + '</td>' +
+                '<td>Rs.' + parseFloat(order.total).toFixed(2) + '</td>' +
+                '<td><span class="badge ' + statusColor + '">' + formatStatus(order.order_status) + '</span></td>' +
+                '<td>' + paymentBadge + '</td>' +
+                '<td>' + new Date(order.created_at).toLocaleDateString() + '</td>' +
+                '<td>' + buildActionButtons(order) + '</td></tr>';
+        }
     </script>
 
     <?php include_once('footer.php') ?>

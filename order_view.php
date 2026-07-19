@@ -84,6 +84,50 @@ $order = $orderid !== '' ? $orderObj->getOrderById($orderid) : null;
 
             </div>
 
+            <?php if ($order['payment_method'] === 'bank_transfer'):
+                $slip = $orderObj->getSlipByOrderId($order['orderid']);
+            ?>
+                <div class="checkout-card mb-4">
+                    <h5 class="checkout-section-title">Bank Transfer Slip</h5>
+
+                    <?php if (!$slip): ?>
+                        <p class="text-danger">No slip uploaded yet. Please contact support.</p>
+
+                    <?php elseif ($slip['status'] === 'pending'): ?>
+                        <p><span class="badge bg-warning text-dark">Pending Review</span></p>
+                        <p class="text-muted small mb-0">
+                            Your slip was uploaded on <?= e(date('d M Y, h:i A', strtotime($slip['uploaded_at']))) ?>
+                            and is awaiting admin approval. We'll update your order status once it's verified.
+                        </p>
+
+                    <?php elseif ($slip['status'] === 'approved'): ?>
+                        <p><span class="badge bg-success">Payment Verified</span></p>
+                        <p class="text-muted small mb-0">Your bank transfer has been confirmed. Your order is now being processed.</p>
+
+                    <?php elseif ($slip['status'] === 'rejected'): ?>
+                        <p><span class="badge bg-danger">Slip Rejected</span></p>
+                        <?php if (!empty($slip['rejection_reason'])): ?>
+                            <p class="text-muted small mb-2">
+                                <strong>Reason:</strong> <?= e($slip['rejection_reason']) ?>
+                            </p>
+                        <?php endif; ?>
+
+                        <p class="mb-2">Please upload a new slip to continue with this order.</p>
+
+                        <form id="reuploadSlipForm" enctype="multipart/form-data">
+                            <input type="hidden" name="orderid" value="<?= e($order['orderid']) ?>">
+                            <div class="mb-2">
+                                <input type="file" name="payment_slip" id="reuploadSlipInput" class="form-control" accept="image/jpeg,image/png,image/jpg,application/pdf" required>
+                                <small class="text-muted">Accepted formats: JPG, PNG, PDF — Max size 5MB</small>
+                            </div>
+                            <div id="reuploadSlipPreview" class="mb-2"></div>
+                            <button type="submit" class="btn btn-dark btn-sm" id="reuploadSlipBtn">Upload New Slip</button>
+                        </form>
+                        <div id="reuploadSlipMessage" class="mt-2"></div>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
+
             <div class="checkout-card">
                 <h5 class="checkout-section-title">Order Summary</h5>
 
@@ -125,6 +169,7 @@ $order = $orderid !== '' ? $orderObj->getOrderById($orderid) : null;
 
     <?php include_once 'footer.php'; ?>
 
+    <script src="js/jquery.js"></script>
     <script src="js/bootstrap.bundle.min.js"></script>
     <script src="js/cart.js"></script>
     <script>
@@ -132,6 +177,66 @@ $order = $orderid !== '' ? $orderObj->getOrderById($orderid) : null;
         <?php if ($order): ?>
             clearCart();
         <?php endif; ?>
+
+        // ===== Slip re-upload handling (only present when slip was rejected) =====
+        $(document).ready(function () {
+            var reuploadInput = document.getElementById('reuploadSlipInput');
+
+            if (reuploadInput) {
+                reuploadInput.addEventListener('change', function () {
+                    var preview = document.getElementById('reuploadSlipPreview');
+                    preview.innerHTML = '';
+                    var file = this.files[0];
+                    if (!file) return;
+
+                    if (file.size > 5 * 1024 * 1024) {
+                        alert('File is too large. Max size is 5MB.');
+                        this.value = '';
+                        return;
+                    }
+
+                    if (file.type === 'application/pdf') {
+                        preview.innerHTML = '<div>📄 ' + file.name + '</div>';
+                    } else if (file.type.startsWith('image/')) {
+                        var reader = new FileReader();
+                        reader.onload = function (e) {
+                            preview.innerHTML = '<img src="' + e.target.result + '" style="max-width:150px;max-height:150px;border-radius:6px;border:1px solid #ddd;">';
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+
+            $('#reuploadSlipForm').on('submit', function (e) {
+                e.preventDefault();
+
+                var formData = new FormData(this);
+                var $btn = $('#reuploadSlipBtn');
+                $btn.prop('disabled', true).text('Uploading...');
+
+                $.ajax({
+                    url: 'lib/routes/order/reuploadslip.php',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    dataType: 'json',
+                    success: function (response) {
+                        if (response.status === 'success') {
+                            $('#reuploadSlipMessage').html('<p class="text-success mb-0">New slip uploaded. Awaiting admin review.</p>');
+                            $('#reuploadSlipForm').hide();
+                        } else {
+                            $('#reuploadSlipMessage').html('<p class="text-danger mb-0">' + (response.message || 'Upload failed. Please try again.') + '</p>');
+                            $btn.prop('disabled', false).text('Upload New Slip');
+                        }
+                    },
+                    error: function () {
+                        $('#reuploadSlipMessage').html('<p class="text-danger mb-0">Something went wrong. Please try again.</p>');
+                        $btn.prop('disabled', false).text('Upload New Slip');
+                    }
+                });
+            });
+        });
     </script>
 </body>
 
