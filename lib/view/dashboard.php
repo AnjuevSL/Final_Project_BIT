@@ -5,13 +5,13 @@ if (isset($_SESSION['user'])) {
     if (isset($_SESSION['usertype'])) {
         $usertype = $_SESSION['usertype'];
         if ($usertype != "Admin") {
-            header('Location:../../index.php');
+            header('Location:../../login.php');
         }
     } else {
-        header('Location:../../index.php');
+        header('Location:../../login.php');
     }
 } else {
-    header('Location:../../index.php');
+    header('Location:../../login.php');
 }
 
 // Load data directly - NO AJAX
@@ -78,6 +78,7 @@ if ($result && $result->num_rows > 0) {
 ?>
 <!doctype html>
 <html lang="en">
+
 <head>
     <title>Dashboard - Boutique Store Admin</title>
     <?php include_once('common.php') ?>
@@ -204,19 +205,34 @@ if ($result && $result->num_rows > 0) {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <?php 
+                                        <?php
                                         if (count($recentOrders) > 0) {
                                             foreach ($recentOrders as $order) {
                                                 $statusColor = '';
-                                                switch($order['order_status']) {
-                                                    case 'pending': $statusColor = 'bg-secondary'; break;
-                                                    case 'billing': $statusColor = 'bg-warning'; break;
-                                                    case 'ready_to_delivery': $statusColor = 'bg-info'; break;
-                                                    case 'delivery': $statusColor = 'bg-primary'; break;
-                                                    case 'delivered': $statusColor = 'bg-success'; break;
-                                                    case 'hold': $statusColor = 'bg-danger'; break;
-                                                    case 'cancelled': $statusColor = 'bg-dark'; break;
-                                                    default: $statusColor = 'bg-secondary';
+                                                switch ($order['order_status']) {
+                                                    case 'pending':
+                                                        $statusColor = 'bg-secondary';
+                                                        break;
+                                                    case 'billing':
+                                                        $statusColor = 'bg-warning';
+                                                        break;
+                                                    case 'ready_to_delivery':
+                                                        $statusColor = 'bg-info';
+                                                        break;
+                                                    case 'delivery':
+                                                        $statusColor = 'bg-primary';
+                                                        break;
+                                                    case 'delivered':
+                                                        $statusColor = 'bg-success';
+                                                        break;
+                                                    case 'hold':
+                                                        $statusColor = 'bg-danger';
+                                                        break;
+                                                    case 'cancelled':
+                                                        $statusColor = 'bg-dark';
+                                                        break;
+                                                    default:
+                                                        $statusColor = 'bg-secondary';
                                                 }
                                                 echo '<tr>';
                                                 echo '<td><strong>' . htmlspecialchars($order['orderid']) . '</strong></td>';
@@ -254,7 +270,7 @@ if ($result && $result->num_rows > 0) {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <?php 
+                                        <?php
                                         if (count($topProducts) > 0) {
                                             foreach ($topProducts as $product) {
                                                 echo '<tr>';
@@ -296,7 +312,11 @@ if ($result && $result->num_rows > 0) {
                     },
                     options: {
                         responsive: true,
-                        plugins: { legend: { position: 'bottom' } }
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
                     }
                 });
             }
@@ -316,7 +336,11 @@ if ($result && $result->num_rows > 0) {
                     },
                     options: {
                         responsive: true,
-                        plugins: { legend: { position: 'bottom' } }
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
                     }
                 });
             }
@@ -324,5 +348,6 @@ if ($result && $result->num_rows > 0) {
     </script>
 
     <?php include_once('footer.php') ?>
-</body>
+    </body>
+
 </html>

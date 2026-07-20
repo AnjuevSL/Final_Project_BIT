@@ -4,13 +4,13 @@ if (isset($_SESSION['user'])) {
     if (isset($_SESSION['usertype'])) {
         $usertype = $_SESSION['usertype'];
         if ($usertype != "Admin") {
-            header('Location:../../index.php');
+            header('Location:../../login.php');
         }
     } else {
-        header('Location:../../index.php');
+        header('Location:../../login.php');
     }
 } else {
-    header('Location:../../index.php');
+    header('Location:../../login.php');
 }
 ?>
 <!doctype html>

@@ -1,10 +1,10 @@
 <?php
 session_start();
 if (isset($_SESSION['user']) && isset($_SESSION['usertype']) && $_SESSION['usertype'] == "Admin") {
-    $currentpage = 'category_report.php';
+  $currentpage = 'category_report.php';
 } else {
-    header('Location:../../index.php');
-    exit();
+  header('Location:../../login.php');
+  exit();
 }
 
 include_once('../function/reportfunction.php');
@@ -18,16 +18,20 @@ $summary    = $repObj->getCategoryReportSummary($status);
 ?>
 <!doctype html>
 <html lang="en">
+
 <head>
   <title>Category Report</title>
   <?php include_once('common.php'); ?>
 </head>
+
 <body>
   <main class="app-main">
     <div class="app-content-header mt-3">
       <div class="container-fluid">
         <div class="row">
-          <div class="col-sm-6"><h3 class="mb-0">Category Report</h3></div>
+          <div class="col-sm-6">
+            <h3 class="mb-0">Category Report</h3>
+          </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-end">
               <li class="breadcrumb-item"><a href="dashboard.php">Home</a></li>
@@ -85,7 +89,7 @@ $summary    = $repObj->getCategoryReportSummary($status);
                 <button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-funnel"></i> Filter</button>
                 <a href="category_report.php" class="btn btn-secondary btn-sm">Reset</a>
                 <a href="export_category_report.php?status=<?php echo urlencode($status ?? ''); ?>"
-                   class="btn btn-success btn-sm ms-auto">
+                  class="btn btn-success btn-sm ms-auto">
                   <i class="bi bi-file-earmark-excel"></i> Export to Excel
                 </a>
               </div>
@@ -146,13 +150,14 @@ $summary    = $repObj->getCategoryReportSummary($status);
   </main>
   <script src="../../js/jquery.js"></script>
   <script>
-    document.getElementById('searchCategory').addEventListener('keyup', function () {
+    document.getElementById('searchCategory').addEventListener('keyup', function() {
       const filter = this.value.toLowerCase();
-      document.querySelectorAll('#categorylist tr').forEach(function (row) {
+      document.querySelectorAll('#categorylist tr').forEach(function(row) {
         row.style.display = row.textContent.toLowerCase().includes(filter) ? '' : 'none';
       });
     });
   </script>
   <?php include_once('footer.php'); ?>
 </body>
+
 </html>

@@ -2,7 +2,7 @@
 session_start();
 
 if (!(isset($_SESSION['user']) && isset($_SESSION['usertype']) && $_SESSION['usertype'] == 'Customer')) {
-    header('Location: index.php');
+    header('Location: login.php');
     exit();
 }
 

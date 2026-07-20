@@ -5,17 +5,18 @@ if (isset($_SESSION['user'])) {
     if (isset($_SESSION['usertype'])) {
         $usertype = $_SESSION['usertype'];
         if ($usertype != "Admin") {
-            header('Location:../../index.php');
+            header('Location:../../login.php');
         }
     } else {
-        header('Location:../../index.php');
+        header('Location:../../login.php');
     }
 } else {
-    header('Location:../../index.php');
+    header('Location:../../login.php');
 }
 ?>
 <!doctype html>
 <html lang="en">
+
 <head>
     <title>Dashboard - Boutique Store Admin</title>
     <?php include_once('common.php') ?>
@@ -142,7 +143,9 @@ if (isset($_SESSION['user'])) {
                                         </tr>
                                     </thead>
                                     <tbody id="recentOrdersTableBody">
-                                        <tr><td colspan="5" class="text-center">Loading...</td></tr>
+                                        <tr>
+                                            <td colspan="5" class="text-center">Loading...</td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -167,7 +170,9 @@ if (isset($_SESSION['user'])) {
                                         </tr>
                                     </thead>
                                     <tbody id="topProductsTableBody">
-                                        <tr><td colspan="3" class="text-center">Loading...</td></tr>
+                                        <tr>
+                                            <td colspan="3" class="text-center">Loading...</td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -213,7 +218,7 @@ if (isset($_SESSION['user'])) {
             $.get("../routes/dashboard/recentorders.php", function(data) {
                 let orders = JSON.parse(data);
                 let rows = '';
-                
+
                 if (orders.length === 0) {
                     rows = '<tr><td colspan="5" class="text-center">No orders yet</td></tr>';
                 } else {
@@ -228,7 +233,7 @@ if (isset($_SESSION['user'])) {
                         rows += '</tr>';
                     });
                 }
-                
+
                 $('#recentOrdersTableBody').html(rows);
             });
         }
@@ -237,7 +242,7 @@ if (isset($_SESSION['user'])) {
             $.get("../routes/dashboard/topproducts.php", function(data) {
                 let products = JSON.parse(data);
                 let rows = '';
-                
+
                 if (products.length === 0) {
                     rows = '<tr><td colspan="3" class="text-center">No data yet</td></tr>';
                 } else {
@@ -249,7 +254,7 @@ if (isset($_SESSION['user'])) {
                         rows += '</tr>';
                     });
                 }
-                
+
                 $('#topProductsTableBody').html(rows);
             });
         }
@@ -258,7 +263,7 @@ if (isset($_SESSION['user'])) {
             // Order Status Chart
             $.get("../routes/dashboard/orderstatus.php", function(data) {
                 let statusData = JSON.parse(data);
-                
+
                 const ctx = document.getElementById('orderStatusChart').getContext('2d');
                 new Chart(ctx, {
                     type: 'doughnut',
@@ -291,7 +296,7 @@ if (isset($_SESSION['user'])) {
             // Category Chart
             $.get("../routes/dashboard/categories.php", function(data) {
                 let categoryData = JSON.parse(data);
-                
+
                 const ctx = document.getElementById('categoryChart').getContext('2d');
                 new Chart(ctx, {
                     type: 'pie',
@@ -324,7 +329,7 @@ if (isset($_SESSION['user'])) {
             // Revenue Chart
             $.get("../routes/dashboard/revenue.php", function(data) {
                 let revenueData = JSON.parse(data);
-                
+
                 const ctx = document.getElementById('revenueChart').getContext('2d');
                 new Chart(ctx, {
                     type: 'line',
@@ -384,5 +389,6 @@ if (isset($_SESSION['user'])) {
     </script>
 
     <?php include_once('footer.php') ?>
-</body>
+    </body>
+
 </html>

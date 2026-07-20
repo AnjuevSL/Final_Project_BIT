@@ -31,7 +31,7 @@ $order = $orderid !== '' ? $orderObj->getOrderById($orderid) : null;
         <?php if (!$order): ?>
             <div class="text-center">
                 <h3>Order not found</h3>
-                <a href="index.php" class="btn btn-dark mt-3">Back to Shop</a>
+                <a href="login.php" class="btn btn-dark mt-3">Back to Shop</a>
             </div>
         <?php else: ?>
 

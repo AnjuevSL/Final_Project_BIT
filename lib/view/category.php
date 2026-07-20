@@ -9,13 +9,13 @@ if (isset($_SESSION['user'])) {
         $usertype = $_SESSION['usertype'];
         if ($usertype == "Admin") {
         } else {
-            header('Location:../../index.php');
+            header('Location:../../login.php');
         }
     } else {
-        header('Location:../../index.php');
+        header('Location:../../login.php');
     }
 } else {
-    header('Location:../../index.php');
+    header('Location:../../login.php');
 }
 
 ?>
@@ -293,9 +293,9 @@ if (isset($_SESSION['user'])) {
                                     // '<td>' + category.category + '</td>' +
                                     '<td>' + statusLabel + '</td>' +
                                     '<td class="">' +
-                                        '<button class="btn btn-sm btn-outline-primary btn-edit" data-id="' + category.categoryid + '">Edit</button> ' +
-                                        statusButton + ' ' +
-                                        '<button class="btn btn-sm btn-outline-danger btn-delete" data-id="' + category.categoryid + '">Delete</button>' +
+                                    '<button class="btn btn-sm btn-outline-primary btn-edit" data-id="' + category.categoryid + '">Edit</button> ' +
+                                    statusButton + ' ' +
+                                    '<button class="btn btn-sm btn-outline-danger btn-delete" data-id="' + category.categoryid + '">Delete</button>' +
                                     '</td>' +
                                     '</tr>';
                             });
@@ -318,7 +318,9 @@ if (isset($_SESSION['user'])) {
                 $.ajax({
                     url: "../routes/category/viewcategory.php",
                     type: 'GET',
-                    data: { categoryId: categoryId },
+                    data: {
+                        categoryId: categoryId
+                    },
                     dataType: 'json',
                     success: function(category) {
                         $('#edit_categoryId').val(category.categoryid);
@@ -382,7 +384,9 @@ if (isset($_SESSION['user'])) {
                     $.ajax({
                         url: "../routes/category/deletecategory.php",
                         type: 'POST',
-                        data: { categoryId: categoryId },
+                        data: {
+                            categoryId: categoryId
+                        },
                         dataType: 'json',
                         success: function(response) {
                             if (response.status === 'success') {
@@ -407,7 +411,10 @@ if (isset($_SESSION['user'])) {
                     $.ajax({
                         url: "../routes/category/togglestatus.php",
                         type: 'POST',
-                        data: { categoryId: categoryId, status: 0 },
+                        data: {
+                            categoryId: categoryId,
+                            status: 0
+                        },
                         dataType: 'json',
                         success: function(response) {
                             if (response.status === 'success') {
@@ -432,7 +439,10 @@ if (isset($_SESSION['user'])) {
                     $.ajax({
                         url: "../routes/category/togglestatus.php",
                         type: 'POST',
-                        data: { categoryId: categoryId, status: 1 },
+                        data: {
+                            categoryId: categoryId,
+                            status: 1
+                        },
                         dataType: 'json',
                         success: function(response) {
                             if (response.status === 'success') {
