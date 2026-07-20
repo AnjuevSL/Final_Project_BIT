@@ -1,5 +1,14 @@
 <?php
 session_start();
+
+if (!isset($_SESSION['user']) || $_SESSION['usertype'] != 'Customer') {
+    echo "<script>
+        alert('You must log in before placing an order.');
+        window.location.href = 'login.php';
+    </script>";
+    exit();
+}
+
 include_once('lib/function/customerfunction.php');
 
 // Helper — escapes output for XSS protection

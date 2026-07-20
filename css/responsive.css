@@ -1,0 +1,316 @@
+/* =========================================================
+   Malee Dress Point — responsive.css
+   Link this AFTER bootstrap.min.css, index.css, cart.css,
+   checkout.css on every page:
+   <link rel="stylesheet" href="css/responsive.css">
+   ========================================================= */
+
+/* -------------------------------------------------------
+   1. GLOBAL / BASE (mobile-first defaults)
+   ------------------------------------------------------- */
+   img {
+    max-width: 100%;
+    height: auto;
+}
+
+.container {
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
+/* -------------------------------------------------------
+   1b. NAVBAR
+   ------------------------------------------------------- */
+.navbar-brand img {
+    height: 44px;
+    margin-top: 0 !important;
+}
+
+/* Give the toggler breathing room so the fixed cart button
+   (top-right) never overlaps it on phones */
+.navbar .navbar-toggler {
+    margin-right: 56px;
+}
+
+@media (min-width: 992px) {
+    .navbar-brand img {
+        height: 60px;
+    }
+
+    .navbar .navbar-toggler {
+        margin-right: 0;
+    }
+}
+
+/* Search bar: full width when menu is collapsed/stacked,
+   fixed comfortable width once it sits inline on desktop */
+.navbar form[role="search"] {
+    width: 100% !important;
+    max-width: 100%;
+}
+
+@media (min-width: 992px) {
+    .navbar form[role="search"] {
+        width: 320px !important;
+        max-width: 320px;
+    }
+}
+
+.navbar-collapse {
+    padding-top: 10px;
+}
+
+@media (min-width: 992px) {
+    .navbar-collapse {
+        padding-top: 0;
+    }
+}
+
+.user-menu-toggle img {
+    width: 32px;
+    height: 32px;
+}
+
+/* -------------------------------------------------------
+   2. CART ICON BUTTON + BADGE
+   ------------------------------------------------------- */
+.cart-icon-btn {
+    position: fixed;
+    top: 10px;
+    right: 60px; /* clears the navbar toggler on phones */
+    z-index: 1050;
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+}
+
+@media (min-width: 992px) {
+    .cart-icon-btn {
+        top: 14px;
+        right: 16px;
+        width: 44px;
+        height: 44px;
+        font-size: 1.1rem;
+    }
+}
+
+.cart-badge {
+    font-size: 0.65rem;
+    min-width: 18px;
+    height: 18px;
+    line-height: 18px;
+}
+
+/* -------------------------------------------------------
+   3. CART SIDEBAR — full width on phones, fixed width up
+   ------------------------------------------------------- */
+.cart-sidebar {
+    width: 100%;
+    max-width: 100%;
+}
+
+.cart-sidebar-body {
+    max-height: 55vh;
+    overflow-y: auto;
+}
+
+.cart-footer {
+    padding: 12px 16px;
+}
+
+@media (min-width: 576px) {
+    .cart-sidebar {
+        width: 380px;
+        max-width: 380px;
+    }
+}
+
+/* -------------------------------------------------------
+   4. BANNER CAROUSEL — shorter on phones, taller on desktop
+   ------------------------------------------------------- */
+.banner-img {
+    height: 220px;
+    object-fit: cover;
+}
+
+.carousel-caption h1 {
+    font-size: 1.1rem;
+    padding: 0 8px;
+}
+
+@media (min-width: 576px) {
+    .banner-img {
+        height: 320px;
+    }
+
+    .carousel-caption h1 {
+        font-size: 1.6rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .banner-img {
+        height: 420px;
+    }
+
+    .carousel-caption h1 {
+        font-size: 2rem;
+    }
+}
+
+@media (min-width: 992px) {
+    .banner-img {
+        height: 520px;
+    }
+
+    .carousel-caption h1 {
+        font-size: 2.6rem;
+    }
+}
+
+/* -------------------------------------------------------
+   5. PRODUCT GRID
+   1 col phone -> 2 col small -> 3 col tablet -> 4 col desktop
+   (overrides Bootstrap's col-md-3 col-sm-6 so it also adapts
+   at the phone breakpoint, which Bootstrap alone won't do)
+   ------------------------------------------------------- */
+@media (max-width: 575.98px) {
+    .product-card .card-img-top {
+        height: 180px;
+        object-fit: cover;
+    }
+
+    .product-card .card-title {
+        font-size: 0.95rem;
+    }
+}
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+    .row > [class*="col-"].col-sm-6 {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .row > [class*="col-"].col-md-3 {
+        flex: 0 0 33.3333%;
+        max-width: 33.3333%;
+    }
+}
+
+@media (min-width: 992px) {
+    .row > [class*="col-"].col-md-3 {
+        flex: 0 0 25%;
+        max-width: 25%;
+    }
+}
+
+/* -------------------------------------------------------
+   6. CHECKOUT PAGE — form + summary stack on mobile,
+   side-by-side on desktop (Bootstrap's col-lg-7/col-lg-5
+   already stacks below lg, this just tightens spacing)
+   ------------------------------------------------------- */
+.checkout-card {
+    padding: 16px;
+    border-radius: 10px;
+}
+
+.checkout-section-title {
+    font-size: 1.05rem;
+}
+
+@media (max-width: 767.98px) {
+    .checkout-card {
+        padding: 14px;
+        margin-bottom: 16px;
+    }
+
+    .order-summary {
+        order: -1; /* show order summary above the form on phones */
+    }
+}
+
+@media (min-width: 992px) {
+    .checkout-card {
+        padding: 24px;
+    }
+}
+
+.bank-transfer-box {
+    padding: 12px;
+    border-radius: 8px;
+}
+
+.checkout-item-name {
+    font-size: 0.95rem;
+    word-break: break-word;
+}
+
+.order-total-row {
+    font-weight: 700;
+    font-size: 1.05rem;
+}
+
+/* -------------------------------------------------------
+   7. PROFILE PAGE
+   ------------------------------------------------------- */
+@media (max-width: 767.98px) {
+    #profileForm .form-label {
+        font-size: 0.9rem;
+    }
+
+    #editProfileBtn,
+    #saveProfileBtn {
+        width: 100%;
+    }
+
+    .d-flex.justify-content-between.align-items-center.mb-3 {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+}
+
+/* -------------------------------------------------------
+   8. ORDER CONFIRMATION / MY ORDERS
+   Details + Customer blocks: stacked on phone, side by
+   side from tablet up (their markup uses a plain d-flex
+   justify-content-between which breaks on narrow screens
+   unless we let it wrap)
+   ------------------------------------------------------- */
+@media (max-width: 767.98px) {
+    .checkout-card.d-flex.justify-content-between {
+        flex-direction: column;
+        gap: 20px;
+    }
+}
+
+.checkout-item {
+    flex-wrap: wrap;
+}
+
+@media (max-width: 400px) {
+    .checkout-item .fw-bold {
+        margin-top: 4px;
+    }
+}
+
+/* -------------------------------------------------------
+   9. TOUCH TARGETS — buttons/inputs comfortable on mobile
+   ------------------------------------------------------- */
+@media (max-width: 575.98px) {
+    .btn {
+        font-size: 0.95rem;
+    }
+
+    .form-control,
+    .form-select {
+        font-size: 16px; /* prevents iOS auto-zoom on focus */
+    }
+}
