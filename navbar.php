@@ -74,7 +74,10 @@ if ($isLoggedIn) {
             <!-- Left: Navigation links -->
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link <?php echo $currentpage == 'shop.php' ? 'active' : '' ?>" href="shop.php">Home</a>
+                    <a class="nav-link <?php echo $currentpage == 'shop.php' ? 'active' : '' ?>"
+                        href="<?php echo (isset($_SESSION['user']) && isset($_SESSION['usertype']) && $_SESSION['usertype'] == 'Customer') ? 'shop.php' : 'index.php'; ?>">
+                        Home
+                    </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link <?php echo $currentpage == 'products.php' ? 'active' : '' ?>" href="#">Products</a>
