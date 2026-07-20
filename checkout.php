@@ -57,7 +57,7 @@ if (isset($_SESSION['user']) && isset($_SESSION['usertype']) && $_SESSION['usert
                             <input type="text" name="cusid" class="form-control" value="<?= e($customer['customerid'] ?? '') ?>" required hidden>
                             <!-- </div> -->
                             <div class="col-md-6">
-                                <label class="form-label">Full Name</label>
+                                <label class="form-label">Full Name <span class="text-danger">*</span></label>
                                 <input type="text"
                                     name="fullname"
                                     class="form-control"
@@ -67,7 +67,7 @@ if (isset($_SESSION['user']) && isset($_SESSION['usertype']) && $_SESSION['usert
                                     required>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label">Phone Number</label>
+                                <label class="form-label">Phone Number <span class="text-danger">*</span></label>
                                 <input type="tel"
                                     name="phone"
                                     class="form-control"
@@ -79,7 +79,7 @@ if (isset($_SESSION['user']) && isset($_SESSION['usertype']) && $_SESSION['usert
                                     required>
                             </div>
                             <div class="col-12">
-                                <label class="form-label">Email</label>
+                                <label class="form-label">Email <span class="text-danger">*</span></label>
                                 <input type="email"
                                     name="email"
                                     class="form-control"
@@ -87,11 +87,11 @@ if (isset($_SESSION['user']) && isset($_SESSION['usertype']) && $_SESSION['usert
                                     required>
                             </div>
                             <div class="col-12">
-                                <label class="form-label">Delivery Address</label>
+                                <label class="form-label">Delivery Address <span class="text-danger">*</span></label>
                                 <textarea name="address" class="form-control" rows="3" required></textarea>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label">City</label>
+                                <label class="form-label">City <span class="text-danger">*</span></label>
                                 <input type="text"
                                     name="city"
                                     class="form-control"
@@ -100,7 +100,7 @@ if (isset($_SESSION['user']) && isset($_SESSION['usertype']) && $_SESSION['usert
                                     required>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label">Postal Code</label>
+                                <label class="form-label">Postal Code <span class="text-danger">*</span></label>
                                 <input type="text"
                                     name="postal_code"
                                     class="form-control"
@@ -115,7 +115,7 @@ if (isset($_SESSION['user']) && isset($_SESSION['usertype']) && $_SESSION['usert
                             </div>
                         </div>
 
-                        <h5 class="checkout-section-title mt-4">Payment Method</h5>
+                        <h5 class="checkout-section-title mt-4">Payment Method <span class="text-danger">*</span></h5>
 
                         <div class="payment-option">
                             <input type="radio" name="payment_method" id="cod" value="cod" checked>
