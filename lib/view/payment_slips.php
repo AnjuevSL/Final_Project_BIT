@@ -4,13 +4,13 @@ if (isset($_SESSION['user'])) {
     if (isset($_SESSION['usertype'])) {
         $usertype = $_SESSION['usertype'];
         if ($usertype != "Admin") {
-            header('Location:../../index.php');
+            header('Location:../../login.php');
         }
     } else {
-        header('Location:../../index.php');
+        header('Location:../../login.php');
     }
 } else {
-    header('Location:../../index.php');
+    header('Location:../../login.php');
 }
 ?>
 <!doctype html>
@@ -124,9 +124,11 @@ if (isset($_SESSION['user'])) {
             }
 
             function renderSlips() {
-                var filtered = currentFilter === 'all'
-                    ? allSlips
-                    : allSlips.filter(function(s) { return s.status === currentFilter; });
+                var filtered = currentFilter === 'all' ?
+                    allSlips :
+                    allSlips.filter(function(s) {
+                        return s.status === currentFilter;
+                    });
 
                 var rows = '';
                 if (filtered.length === 0) {
@@ -149,9 +151,9 @@ if (isset($_SESSION['user'])) {
             }
 
             function buildSlipRow(slip) {
-                var thumb = slip.file_type === 'pdf'
-                    ? '<span class="badge bg-dark">PDF</span>'
-                    : '<img src="../../' + slip.file_path + '" style="width:40px;height:40px;object-fit:cover;border-radius:4px;">';
+                var thumb = slip.file_type === 'pdf' ?
+                    '<span class="badge bg-dark">PDF</span>' :
+                    '<img src="../../' + slip.file_path + '" style="width:40px;height:40px;object-fit:cover;border-radius:4px;">';
 
                 var actionBtn = '<button class="btn btn-sm btn-info btn-view-slip" data-id="' + slip.id + '">View</button>';
 
@@ -178,14 +180,16 @@ if (isset($_SESSION['user'])) {
             // ===== View slip modal =====
             $(document).on('click', '.btn-view-slip', function() {
                 var slipId = $(this).data('id');
-                var slip = allSlips.find(function(s) { return String(s.id) === String(slipId); });
+                var slip = allSlips.find(function(s) {
+                    return String(s.id) === String(slipId);
+                });
                 if (!slip) return;
 
                 $('#modalSlipId').val(slip.id);
 
-                var previewHtml = slip.file_type === 'pdf'
-                    ? '<a href="../../' + slip.file_path + '" target="_blank" class="btn btn-outline-dark">Open PDF Slip</a>'
-                    : '<img src="../../' + slip.file_path + '" class="img-fluid rounded border" style="max-height:400px;">';
+                var previewHtml = slip.file_type === 'pdf' ?
+                    '<a href="../../' + slip.file_path + '" target="_blank" class="btn btn-outline-dark">Open PDF Slip</a>' :
+                    '<img src="../../' + slip.file_path + '" class="img-fluid rounded border" style="max-height:400px;">';
 
                 var infoHtml =
                     '<div><strong>Order ID:</strong> ' + slip.orderid + '</div>' +
@@ -246,7 +250,11 @@ if (isset($_SESSION['user'])) {
                 $.ajax({
                     url: "../routes/order/reviewpaymentslip.php",
                     type: 'POST',
-                    data: { slipId: slipId, decision: decision, reason: reason },
+                    data: {
+                        slipId: slipId,
+                        decision: decision,
+                        reason: reason
+                    },
                     dataType: 'json',
                     success: function(response) {
                         if (response.status === 'success') {

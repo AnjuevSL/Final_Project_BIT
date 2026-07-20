@@ -1,351 +1,135 @@
+<?php
+require_once 'lib/function/productfunction.php';
+
+// Fetch active products from the database
+$productObj = new Product;
+$products = $productObj->getActiveProducts();
+
+// Helper — escapes output for XSS protection
+function e($string) {
+    return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Boutique Store</title>
     <link rel="stylesheet" href="css/bootstrap.min.css">
-    <!--  <link rel="stylesheet" href="css/bootstrap-icons-1.13.1/bootstrap-icons.min.css"> -->
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/cart.css">
     <link rel="stylesheet" href="css/fontawesome-free-7.1.0-web/css/all.min.css">
 </head>
 
 <body>
-    <?php include_once('navbar.php'); ?>
-    <div class="container">
-        <div class="row">
-            <div class="col-6 px-4">
-                <h2 class="text-center">Login</h2>
-                <form>
-                    <div>
-                        <label for="exampleInputEmail1" class="form-label mt-4">Email address</label>
-                        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"
-                            placeholder="Enter email" name="login_Email">
 
-                        <div class="row">
-                            <div class="col-11">
-                                <label for="exampleInputPassword1" class="form-label mt-3">Password</label>
-                                <input type="password" class="form-control" id="password" placeholder="Password" autocomplete="off" name="login_Password">
-                            </div>
-                            <div class="col-1 mt-5">
-                                <button type="button" id="showpwbtn" class="btn btn-dark"><i id="btnicon"
-                                        class="fa-solid fa-eye"></i></button>
-                            </div>
-                        </div>
-                    </div>
-                    <button type="submit" id="loginbtn" onclick="return false" value="login" class="btn btn-success my-3" name="loginbtn">Login</button>
-                    <div>
-                        <a href="passwordrest.php">Forget Password</a>
-                    </div>
+    <?php include_once 'navbar.php'; ?>
+
+    <!-- Cart trigger button (move this into navbar.php next to your logo/menu) -->
+    <button type="button" class="cart-icon-btn" onclick="toggleCartSidebar()">
+        🛒
+        <span id="cartBadge" class="cart-badge">0</span>
+    </button>
+
+    <!-- Backdrop (click to close) -->
+    <div id="cartBackdrop" class="cart-backdrop" onclick="closeCartSidebar()"></div>
+
+    <!-- Cart Sidebar (custom, no Bootstrap JS dependency) -->
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-sidebar-header">
+            <h5>Your Cart</h5>
+            <button type="button" class="btn-close" onclick="closeCartSidebar()"></button>
+        </div>
+        <div class="cart-sidebar-body">
+            <div id="cartItems"></div>
+            <p id="cartEmpty" class="text-center text-muted" style="display:none;">Your cart is empty.</p>
+        </div>
+        <div class="cart-footer">
+            <div class="d-flex justify-content-between mb-3">
+                <span class="cart-total-label">Total</span>
+                <span id="cartTotal" class="cart-total-label">Rs.0.00</span>
             </div>
-            </form>
-            <div class="col-6 px-4">
-                <h2 class="text-center">Registration</h2>
-                <div>
-                    <label for="email" class="form-label mt-4">Email address</label>
-                    <input type="email" class="form-control" id="email" placeholder="Enter email">
-                </div>
-                <div class="row">
-                    <div class="col-11">
-                        <label for="exampleInputPassword2" class="form-label mt-3">Password</label>
-                        <input type="password" class="form-control" id="password2" placeholder="Password" autocomplete="off">
-                    </div>
-                    <div class="col-1 mt-5">
-                        <button type="button" id="showpwbtn2" class="btn btn-dark"><i id="btnicon2"
-                                class="fa-solid fa-eye"></i></button>
-                    </div>
-                </div>
-                <div>
-                    <label for="fullName" class="form-label mt-4">Full name</label>
-                    <input type="name" class="form-control" id="fullName" placeholder="Enter name">
-                </div>
-                <div>
-                    <label for="telNo" class="form-label mt-4">Tel No</label>
-                    <input type="name" class="form-control" id="telNo" placeholder="Enter Tel no">
-                </div>
-                <div>
-                    <label for="exampleInputNIC" class="form-label mt-4">NIC</label>
-                    <input type="name" class="form-control" id="nic" placeholder="Enter NIC">
-                </div>
-                <div>
-                    <div class="row">
-                        <div class="col-8">
-                            <label for="birthday" class="form-label mt-4">Birthday</label>
-                            <input type="date" class="form-control" id="birthday">
-                        </div>
-                        <div class="col-4">
-                            <label for="age" class="form-label mt-4 ">Age</label>
-                            <input type="text" class="form-control" id="age" read only>
-                        </div>
-                    </div>
+            <a href="checkout.php" class="btn btn-dark w-100 mb-2">Checkout</a>
+            <button type="button" class="btn btn-outline-danger w-100 btn-sm" onclick="clearCart()">Clear Cart</button>
+        </div>
+    </div>
 
+    <!-- Banner Carousel -->
+    <div id="carouselIndicators" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000">
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#carouselIndicators" data-bs-slide-to="0" class="active"></button>
+            <button type="button" data-bs-target="#carouselIndicators" data-bs-slide-to="1"></button>
+            <button type="button" data-bs-target="#carouselIndicators" data-bs-slide-to="2"></button>
+        </div>
+
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="assets/Banner Image 1.webp" class="d-block w-100 banner-img" alt="Banner 1">
+                <div class="carousel-caption">
+                    <h1>Explore Our Fashion Collection</h1>
                 </div>
-                <div>
-                    <label for="exampleSelectgender" class="form-label mt-4">Gender</label>
-                    <select class="form-select" id="gender" fdprocessedid="mbstcc">
-                        <option disable selected value="">Select Gender</option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                    </select>
+            </div>
+            <div class="carousel-item">
+                <img src="assets/Banner Image 2.webp" class="d-block w-100 banner-img" alt="Banner 2">
+                <div class="carousel-caption">
+                    <h1>Discover New Trends</h1>
                 </div>
-                <div class="mt">
-                    <button type="button" id="regbtn" class="btn btn-success my-3">Register</button>
+            </div>
+            <div class="carousel-item">
+                <img src="assets/Banner Image 3.webp" class="d-block w-100 banner-img" alt="Banner 3">
+                <div class="carousel-caption">
+                    <h1>Shop Your Style</h1>
                 </div>
             </div>
         </div>
 
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselIndicators" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselIndicators" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+        </button>
     </div>
+
+    <!-- Featured Products -->
+    <div class="container mt-5">
+
+        <h2 class="text-center mb-4">Featured Products</h2>
+
+        <div class="row">
+            <?php if (empty($products)): ?>
+                <p class="text-center text-muted">Products naha methanata. Admin panel eken add karanna.</p>
+            <?php else: ?>
+                <?php foreach ($products as $product): ?>
+                    <div class="col-md-3 col-sm-6 mb-4">
+                        <div class="card h-100 product-card">
+                            <img src="<?= e($product['image']) ?>" class="card-img-top" alt="<?= e($product['productName']) ?>">
+                            <div class="card-body text-center">
+                                <h5 class="card-title"><?= e($product['productName']) ?></h5>
+                                <p class="card-text text-success fw-bold">
+                                    Rs.<?= number_format($product['price'], 2) ?>
+                                </p>
+                                <button
+                                    type="button"
+                                    class="btn btn-dark w-100"
+                                    onclick="addToCart('<?= e($product['productid']) ?>', '<?= e(addslashes($product['productName'])) ?>', <?= (float) $product['price'] ?>, '<?= e($product['image']) ?>')">
+                                    Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </div>
+
+    </div>
+
+    <?php include_once 'footer.php'; ?>
+
     <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/cart.js"></script>
 </body>
-
-
-<script src="js/jquery.js"></script>
-<script src="js/sweetalert.js"></script>
-<script>
-    $(document).ready(function() {
-        const today = new Date().toISOString().split('T')[0];
-
-        $('#birthday').attr('max', today);
-
-        $('#birthday').on('change', function() {
-            const birthday = new Date($(this).val());
-            const todayday = new Date();
-            let age = todayday.getFullYear() - birthday.getFullYear();
-
-            $('#age').val(age);
-        });
-        $('#telNo').on('input change', function() {
-            let value = $(this).val();
-
-            console.log(value);
-
-            value = value.replace(/\D/g, '');
-
-            if (value.length > 0 && !value.startsWith('0')) {
-                value = "0" + value;
-            }
-
-            if (value.length > 10) {
-                value = value.slice(0, 10);
-            }
-            console.log(value);
-
-            $(this).val(value);
-        });
-
-        $('#nic').on('input change', function() {
-            let value = $(this).val().trim().toUpperCase();
-
-            const oldNIC = /^\d{9}[VX]$/;
-
-            const newNIC = /^\d{12}$/;
-
-            if (oldNIC.test(value) || newNIC.test(value)) {
-                $('#nic').attr('class', 'form-control is-valid');
-            } else {
-                $('#nic').attr('class', 'form-control is-invalid');
-
-
-                if (value.length > 12) {
-                    value = value.slice(0, 12);
-                    $(this).val(value);
-                }
-            }
-        });
-        $('#loginbtn').on('click', function() {
-            let email = $('#exampleInputEmail1').val();
-            let password = $('#password').val();
-
-            let error = 0;
-
-            if (email == "") {
-                // alert("Please Add Email");
-                $('#exampleInputEmail1').attr('class', 'form-control is-invalid');
-
-                Swal.fire({
-                    title: "Insert Email",
-                    text: "Email is empty!",
-                    icon: "error"
-                });
-                error++;
-            } else {
-                $('#exampleInputEmail1').attr('class', 'form-control is-valid');
-            }
-            if (password == "" || password.length < 5) {
-
-                $('#password').attr('class', 'form-control is-invalid');
-
-                error++;
-            } else {
-                $('#password').attr('class', 'form-control is-valid');
-            }
-
-            if (error == 0) {
-
-                $.ajax({
-                    type: 'POST',
-                    url: 'lib/routes/auth/authentication.php',
-                    data: {
-                        loginEmail: email,
-                        loginPassword: password
-                    },
-                    dataType: 'json',
-                    success: function(respons) {
-                        if (respons.loginstatus === true) {
-                            window.location.href = respons.path;
-                        } else {
-                            Swal.fire({
-                                title: "Login Failed",
-                                text: respons.message,
-                                icon: "error"
-                            });
-                        }
-                    },
-                    error: function() {
-                        Swal.fire({
-                            title: "Error",
-                            text: "Something went wrong. Please try again.",
-                            icon: "error"
-                        });
-                    }
-                })
-            }
-
-        });
-        $('#regbtn').on('click', function() {
-            let email = $('#email').val();
-            let password = $('#password2').val();
-            let name = $('#fullName').val();
-            let phone = $('#telNo').val();
-            let nic = $('#nic').val();
-            let gender = $('#gender').val();
-            let birthday = $('#birthday').val();
-
-            console.log(phone);
-            let error = 0;
-
-            if (email == "") {
-                // alert("Please Add Email");
-                $('#email').attr('class', 'form-control is-invalid');
-
-                Swal.fire({
-                    title: "Insert Email",
-                    text: "Email is empty!",
-                    icon: "error"
-                });
-                error++;
-            } else {
-                $('#email').attr('class', 'form-control is-valid');
-            }
-            if (password == "" || password.length < 5) {
-
-                $('#password2').attr('class', 'form-control is-invalid');
-
-                error++;
-            } else {
-                $('#password2').attr('class', 'form-control is-valid');
-            }
-            if (name == "") {
-                $('#fullName').attr('class', 'form-control is-invalid');
-                error++;
-            } else {
-                $('#fullName').attr('class', 'form-control is-valid');
-            }
-
-            if (phone == "" || phone.length < 10) {
-                $('#telNo').attr('class', 'form-control is-invalid');
-                error++;
-            } else {
-                $('#telNo').attr('class', 'form-control is-valid');
-
-            }
-
-            if (nic == "" || nic.length < 10) {
-                $('#nic').attr('class', 'form-control is-invalid');
-                error++;
-            } else {
-                $('#nic').attr('class', 'form-control is-valid');
-            }
-
-            console.log(phone);
-
-            if (gender == null || gender == "") {
-                $('#gender').attr('class', 'form-control is-invalid');
-                error++;
-            } else {
-                $('#gender').attr('class', 'form-control is-valid');
-            }
-
-            if (error == 0) {
-                // alert('success!');
-
-                $.ajax({
-                    type: 'POST',
-                    url: 'lib/routes/customer/addCustomer.php',
-                    data: {
-                        customerEmail: email,
-                        customerPassword: password,
-                        customerName: name,
-                        customerPhone: phone,
-                        customerNIC: nic,
-                        customerGender: gender,
-                        customerBirthday: birthday
-                    },
-                    success: function(respons) {
-                        if (respons == "success") {
-                            Swal.fire({
-                                title: "Successfully Registered",
-                                text: "user created successfully",
-                                icon: "success"
-                            });
-                        } else if (respons == "Phone number Exists") {
-                            Swal.fire({
-                                title: "Phone number",
-                                text: "Phone number Exists",
-                                icon: "info"
-                            });
-                        } else {
-                            Swal.fire({
-                                title: "Err",
-                                text: respons,
-                                icon: "info"
-                            });
-                        }
-                    },
-                    error: function() {
-                        // error handling
-                    }
-                })
-            }
-
-        });
-
-
-
-        $("#showpwbtn").on('click', function() {
-            var passwordField = $("#password");
-
-            if (passwordField.attr('type') === 'password') {
-                passwordField.attr('type', 'text');
-                $("#btnicon").attr('class', 'fa-solid fa-eye-slash');
-            } else {
-                passwordField.attr('type', 'password');
-                $("#btnicon").attr('class', 'fa-solid fa-eye');
-            }
-        })
-
-        $("#showpwbtn2").on('click', function() {
-            var passwordField = $("#password2");
-
-            if (passwordField.attr('type') === 'password') {
-                passwordField.attr('type', 'text');
-                $("#btnicon2").attr('class', 'fa-solid fa-eye-slash');
-            } else {
-                passwordField.attr('type', 'password');
-                $("#btnicon2").attr('class', 'fa-solid fa-eye');
-            }
-        })
-    });
-</script>
 
 </html>

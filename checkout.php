@@ -58,15 +58,33 @@ if (isset($_SESSION['user']) && isset($_SESSION['usertype']) && $_SESSION['usert
                             <!-- </div> -->
                             <div class="col-md-6">
                                 <label class="form-label">Full Name</label>
-                                <input type="text" name="fullname" class="form-control" value="<?= e($customer['customerName'] ?? '') ?>" required>
+                                <input type="text"
+                                    name="fullname"
+                                    class="form-control"
+                                    value="<?= e($customer['customerName'] ?? '') ?>"
+                                    pattern="[A-Za-z\s]+"
+                                    title="Full name should contain only letters."
+                                    required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Phone Number</label>
-                                <input type="tel" name="phone" class="form-control" value="<?= e($customer['customerPhone'] ?? '') ?>" required>
+                                <input type="tel"
+                                    name="phone"
+                                    class="form-control"
+                                    value="<?= e($customer['customerPhone'] ?? '') ?>"
+                                    pattern="[0-9]{10}"
+                                    maxlength="10"
+                                    minlength="10"
+                                    title="Phone number must contain exactly 10 digits."
+                                    required>
                             </div>
                             <div class="col-12">
                                 <label class="form-label">Email</label>
-                                <input type="email" name="email" class="form-control" value="<?= e($customer['customerEmail'] ?? '') ?>" required>
+                                <input type="email"
+                                    name="email"
+                                    class="form-control"
+                                    value="<?= e($customer['customerEmail'] ?? '') ?>"
+                                    required>
                             </div>
                             <div class="col-12">
                                 <label class="form-label">Delivery Address</label>
@@ -74,11 +92,22 @@ if (isset($_SESSION['user']) && isset($_SESSION['usertype']) && $_SESSION['usert
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">City</label>
-                                <input type="text" name="city" class="form-control" required>
+                                <input type="text"
+                                    name="city"
+                                    class="form-control"
+                                    pattern="[A-Za-z\s]+"
+                                    title="City should contain only letters."
+                                    required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Postal Code</label>
-                                <input type="text" name="postal_code" class="form-control">
+                                <input type="text"
+                                    name="postal_code"
+                                    class="form-control"
+                                    pattern="[0-9]+"
+                                    maxlength="5"
+                                    minlength="5"
+                                    title="Postal code must contain 5 digits.">
                             </div>
                             <div class="col-12">
                                 <label class="form-label">Order Notes (optional)</label>

@@ -58,7 +58,7 @@ if ($isLoggedIn) {
     <div class="container-fluid">
 
         <!-- Logo -->
-        <a class="navbar-brand py-0" href="index.php">
+        <a class="navbar-brand py-0" href="login.php">
             <img src="assets/logo2.png" alt="Logo" height="60" style="margin-top:-10px">
         </a>
 
@@ -105,13 +105,15 @@ if ($isLoggedIn) {
                         <ul class="dropdown-menu dropdown-menu-end" id="userMenuList">
                             <li><a class="dropdown-item" href="profile.php"><i class="fa-solid fa-user me-2"></i>Profile</a></li>
                             <li><a class="dropdown-item" href="my_orders.php"><i class="fa-solid fa-box me-2"></i>My Orders</a></li>
-                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
                             <li><a class="dropdown-item text-danger" href="lib/view/logout.php"><i class="fa-solid fa-right-from-bracket me-2"></i>Sign out</a></li>
                         </ul>
                     </div>
                 <?php else : ?>
                     <!-- Not logged in -->
-                    <a href="index.php" class="nav-icon" title="Login">
+                    <a href="login.php" class="nav-icon" title="Login">
                         <i class="fa-solid fa-user me-1"></i>
                         <span class="d-none d-md-inline">Login</span>
                     </a>

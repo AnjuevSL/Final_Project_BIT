@@ -3,7 +3,7 @@ session_start();
 if (isset($_SESSION['user']) && isset($_SESSION['usertype']) && $_SESSION['usertype'] == "Admin") {
     $currentpage = 'order_report.php';
 } else {
-    header('Location:../../index.php');
+    header('Location:../../login.php');
     exit();
 }
 

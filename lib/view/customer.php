@@ -9,13 +9,13 @@ if (isset($_SESSION['user'])) {
     $usertype = $_SESSION['usertype'];
     if ($usertype == "Admin") {
     } else {
-      header('Location:../../index.php');
+      header('Location:../../login.php');
     }
   } else {
-    header('Location:../../index.php');
+    header('Location:../../login.php');
   }
 } else {
-  header('Location:../../index.php');
+  header('Location:../../login.php');
 }
 
 ?>
@@ -153,7 +153,9 @@ if (isset($_SESSION['user'])) {
 
   <script>
     function loadalldata() {
-      $.get("../routes/customer/loaddata.php", { role: 'customer' }, function(res) {
+      $.get("../routes/customer/loaddata.php", {
+        role: 'customer'
+      }, function(res) {
         $('#userlist').html(res);
       });
     }

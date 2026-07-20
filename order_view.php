@@ -31,7 +31,7 @@ $order = $orderid !== '' ? $orderObj->getOrderById($orderid) : null;
         <?php if (!$order): ?>
             <div class="text-center">
                 <h3>Order not found</h3>
-                <a href="index.php" class="btn btn-dark mt-3">Back to Shop</a>
+                <a href="login.php" class="btn btn-dark mt-3">Back to Shop</a>
             </div>
         <?php else: ?>
 
@@ -179,11 +179,11 @@ $order = $orderid !== '' ? $orderObj->getOrderById($orderid) : null;
         <?php endif; ?>
 
         // ===== Slip re-upload handling (only present when slip was rejected) =====
-        $(document).ready(function () {
+        $(document).ready(function() {
             var reuploadInput = document.getElementById('reuploadSlipInput');
 
             if (reuploadInput) {
-                reuploadInput.addEventListener('change', function () {
+                reuploadInput.addEventListener('change', function() {
                     var preview = document.getElementById('reuploadSlipPreview');
                     preview.innerHTML = '';
                     var file = this.files[0];
@@ -199,7 +199,7 @@ $order = $orderid !== '' ? $orderObj->getOrderById($orderid) : null;
                         preview.innerHTML = '<div>📄 ' + file.name + '</div>';
                     } else if (file.type.startsWith('image/')) {
                         var reader = new FileReader();
-                        reader.onload = function (e) {
+                        reader.onload = function(e) {
                             preview.innerHTML = '<img src="' + e.target.result + '" style="max-width:150px;max-height:150px;border-radius:6px;border:1px solid #ddd;">';
                         };
                         reader.readAsDataURL(file);
@@ -207,7 +207,7 @@ $order = $orderid !== '' ? $orderObj->getOrderById($orderid) : null;
                 });
             }
 
-            $('#reuploadSlipForm').on('submit', function (e) {
+            $('#reuploadSlipForm').on('submit', function(e) {
                 e.preventDefault();
 
                 var formData = new FormData(this);
@@ -221,7 +221,7 @@ $order = $orderid !== '' ? $orderObj->getOrderById($orderid) : null;
                     processData: false,
                     contentType: false,
                     dataType: 'json',
-                    success: function (response) {
+                    success: function(response) {
                         if (response.status === 'success') {
                             $('#reuploadSlipMessage').html('<p class="text-success mb-0">New slip uploaded. Awaiting admin review.</p>');
                             $('#reuploadSlipForm').hide();
@@ -230,7 +230,7 @@ $order = $orderid !== '' ? $orderObj->getOrderById($orderid) : null;
                             $btn.prop('disabled', false).text('Upload New Slip');
                         }
                     },
-                    error: function () {
+                    error: function() {
                         $('#reuploadSlipMessage').html('<p class="text-danger mb-0">Something went wrong. Please try again.</p>');
                         $btn.prop('disabled', false).text('Upload New Slip');
                     }
