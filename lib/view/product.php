@@ -233,6 +233,17 @@ $suppliers = $supplierObj->getAllSuppliers();
             // Load the product list on page load
             loadProducts();
 
+            // ---------------- Live search ----------------
+            // Filters the already-loaded product rows as you type in the
+            // shared navbar search box (#searchtext).
+            $('#searchtext').on('input', function() {
+                var searchtext = $(this).val().trim().toLowerCase();
+                $('#productTableBody tr').each(function() {
+                    var rowText = $(this).text().toLowerCase();
+                    $(this).toggle(searchtext === '' || rowText.indexOf(searchtext) !== -1);
+                });
+            });
+
             // ---------------- Add Product ----------------
 
             $('#formFile').change(function() {
@@ -333,6 +344,9 @@ $suppliers = $supplierObj->getAllSuppliers();
                         }
 
                         $('#productTableBody').html(rows);
+
+                        // keep an active search term applied to freshly loaded rows
+                        $('#searchtext').trigger('input');
                     },
                     error: function() {
                         $('#productTableBody').html('<tr><td colspan="6" class="text-center text-danger">Failed to load products</td></tr>');

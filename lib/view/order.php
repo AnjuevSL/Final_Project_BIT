@@ -278,6 +278,20 @@ if (isset($_SESSION['user'])) {
     <script src="../../js/jquery.js"></script>
     <script>
         $(document).ready(function() {
+            // Status -> tbody element ID map.
+            // Needed because the "ready_to_delivery" status string doesn't
+            // naturally turn into its tbody's actual ID ("readyDeliveryTableBody")
+            // by simple string concatenation — that mismatch was why the
+            // "Ready to Delivery" tab never showed any rows.
+            var statusToTableId = {
+                'billing': 'billingTableBody',
+                'ready_to_delivery': 'readyDeliveryTableBody',
+                'delivery': 'deliveryTableBody',
+                'delivered': 'deliveredTableBody',
+                'hold': 'holdTableBody',
+                'cancelled': 'cancelledTableBody'
+            };
+
             loadAllOrders();
             loadOrdersByStatus('billing');
             loadOrdersByStatus('ready_to_delivery');
@@ -285,6 +299,19 @@ if (isset($_SESSION['user'])) {
             loadOrdersByStatus('delivered');
             loadOrdersByStatus('hold');
             loadOrdersByStatus('cancelled');
+
+            // ===== Live search (filters the currently loaded tables as you type) =====
+            // Works across all status tabs, not just "All Orders", since the
+            // data for every tab is already loaded on page load.
+            $('#searchtext').on('input', function() {
+                var searchtext = $(this).val().trim().toLowerCase();
+
+                $('.tab-pane table tbody tr').each(function() {
+                    var rowText = $(this).text().toLowerCase();
+                    var isMatch = searchtext === '' || rowText.indexOf(searchtext) !== -1;
+                    $(this).toggle(isMatch);
+                });
+            });
 
             function buildActionButtons(order) {
                 var needsVerification = (order.payment_method === 'bank_transfer' && parseInt(order.payment_verified) === 0);
@@ -301,13 +328,32 @@ if (isset($_SESSION['user'])) {
                 }
             }
 
+            function buildPaymentBadge(order) {
+                if (order.payment_method !== 'bank_transfer') {
+                    return '<span class="badge bg-secondary">Cash on Delivery</span>';
+                }
+
+                var slipBadge = '';
+                switch (order.slip_status) {
+                    case 'pending':
+                        slipBadge = '<span class="badge bg-warning text-dark">Slip Pending</span>';
+                        break;
+                    case 'approved':
+                        slipBadge = '<span class="badge bg-success">Slip Approved</span>';
+                        break;
+                    case 'rejected':
+                        slipBadge = '<span class="badge bg-danger">Slip Rejected</span>';
+                        break;
+                    default:
+                        slipBadge = '<span class="badge bg-dark">No Slip</span>';
+                }
+
+                return '<span class="badge bg-info text-dark">Bank Transfer</span><br>' + slipBadge;
+            }
+
             function buildRow(order) {
                 var statusColor = getStatusColor(order.order_status);
-                var paymentBadge = order.payment_method === 'bank_transfer' ?
-                    (parseInt(order.payment_verified) === 0 ?
-                        '<span class="badge bg-danger">Bank Transfer (Unverified)</span>' :
-                        '<span class="badge bg-success">Bank Transfer (Verified)</span>') :
-                    '<span class="badge bg-secondary">Cash on Delivery</span>';
+                var paymentBadge = buildPaymentBadge(order);
 
                 return '<tr><td>' + order.orderid + '</td>' +
                     '<td>' + order.customer_name + '</td>' +
@@ -351,8 +397,8 @@ if (isset($_SESSION['user'])) {
                                 rows += buildRow(order);
                             });
                         }
-                        var tableId = '#' + status + 'TableBody';
-                        $(tableId).html(rows);
+                        var elementId = statusToTableId[status] || (status + 'TableBody');
+                        $('#' + elementId).html(rows);
                     }
                 });
             }
@@ -391,6 +437,11 @@ if (isset($_SESSION['user'])) {
                 loadOrdersByStatus('delivered');
                 loadOrdersByStatus('hold');
                 loadOrdersByStatus('cancelled');
+
+                // keep whatever search term is active applied to the freshly loaded rows
+                setTimeout(function() {
+                    $('#searchtext').trigger('input');
+                }, 300);
             }
 
             // ===== View Order Details =====
@@ -540,42 +591,6 @@ if (isset($_SESSION['user'])) {
                 });
             }
         });
-
-        function buildPaymentBadge(order) {
-            if (order.payment_method !== 'bank_transfer') {
-                return '<span class="badge bg-secondary">Cash on Delivery</span>';
-            }
-
-            var slipBadge = '';
-            switch (order.slip_status) {
-                case 'pending':
-                    slipBadge = '<span class="badge bg-warning text-dark">Slip Pending</span>';
-                    break;
-                case 'approved':
-                    slipBadge = '<span class="badge bg-success">Slip Approved</span>';
-                    break;
-                case 'rejected':
-                    slipBadge = '<span class="badge bg-danger">Slip Rejected</span>';
-                    break;
-                default:
-                    slipBadge = '<span class="badge bg-dark">No Slip</span>';
-            }
-
-            return '<span class="badge bg-info text-dark">Bank Transfer</span><br>' + slipBadge;
-        }
-
-        function buildRow(order) {
-            var statusColor = getStatusColor(order.order_status);
-            var paymentBadge = buildPaymentBadge(order);
-
-            return '<tr><td>' + order.orderid + '</td>' +
-                '<td>' + order.customer_name + '</td>' +
-                '<td>Rs.' + parseFloat(order.total).toFixed(2) + '</td>' +
-                '<td><span class="badge ' + statusColor + '">' + formatStatus(order.order_status) + '</span></td>' +
-                '<td>' + paymentBadge + '</td>' +
-                '<td>' + new Date(order.created_at).toLocaleDateString() + '</td>' +
-                '<td>' + buildActionButtons(order) + '</td></tr>';
-        }
     </script>
 
     <?php include_once('footer.php') ?>

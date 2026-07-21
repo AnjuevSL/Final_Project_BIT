@@ -108,8 +108,17 @@ if (isset($_SESSION['user'])) {
         $(document).ready(function() {
             var allSlips = [];
             var currentFilter = 'all';
+            var currentSearch = '';
 
             loadSlips();
+
+            // ---------------- Live search ----------------
+            // Combines with the status tab filter — both are applied together
+            // against the in-memory allSlips array.
+            $('#searchtext').on('input', function() {
+                currentSearch = $(this).val().trim().toLowerCase();
+                renderSlips();
+            });
 
             function loadSlips() {
                 $.ajax({
@@ -123,12 +132,22 @@ if (isset($_SESSION['user'])) {
                 });
             }
 
+            function slipMatchesSearch(slip) {
+                if (currentSearch === '') return true;
+                var haystack = (
+                    (slip.orderid || '') + ' ' +
+                    (slip.customer_name || '') + ' ' +
+                    (slip.status || '') + ' ' +
+                    (slip.reviewed_by || '')
+                ).toLowerCase();
+                return haystack.indexOf(currentSearch) !== -1;
+            }
+
             function renderSlips() {
-                var filtered = currentFilter === 'all' ?
-                    allSlips :
-                    allSlips.filter(function(s) {
-                        return s.status === currentFilter;
-                    });
+                var filtered = allSlips.filter(function(s) {
+                    var matchesFilter = currentFilter === 'all' || s.status === currentFilter;
+                    return matchesFilter && slipMatchesSearch(s);
+                });
 
                 var rows = '';
                 if (filtered.length === 0) {

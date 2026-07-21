@@ -167,7 +167,7 @@ if (isset($_SESSION['user'])) {
         if ($searchtext != "") {
           $.get("../routes/customer/loaddatasearch.php", {
             searchtext: $searchtext,
-            role: 'admin'
+            role: 'Admin'
           }, function(res) {
             $('#userlist').html(res);
           });
