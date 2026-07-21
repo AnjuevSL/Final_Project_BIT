@@ -57,7 +57,7 @@ if (!empty($errors)) {
     exit;
 }
 
-// Place the order
+// Place the order (this also validates stock and deducts it atomically — see orderfunction.php)
 $orderObj = new Order;
 $result = $orderObj->placeOrder($customer, $cart, 350.00);
 
@@ -76,6 +76,14 @@ if ($result['status'] === 'success') {
 
     header('Location: order_confirmation.php?orderid=' . urlencode($result['orderid']));
     exit;
+
+} elseif ($result['status'] === 'insufficient_stock') {
+    // A cart item no longer has enough stock — send the customer back to
+    // checkout with a clear message instead of a generic error.
+    $errorMsg = urlencode($result['message']);
+    header("Location: checkout.php?error={$errorMsg}");
+    exit;
+
 } else {
     $errorMsg = urlencode($result['message']);
     header("Location: checkout.php?error={$errorMsg}");

@@ -1,5 +1,5 @@
 <?php
-// Report class - handles all reporting logic (Order, Product, Category, Supplier)
+// Report class - handles all reporting logic (Order, Product, Category, Supplier, Inventory)
 
 include_once('main.php');
 
@@ -343,6 +343,196 @@ class Report extends Main
             $sql .= " AND d_status = ?";
             $types .= "i";
             $params[] = (int) $status;
+        }
+
+        $stmt = $this->dbResult->prepare($sql);
+
+        if (!empty($params)) {
+            $stmt->bind_param($types, ...$params);
+        }
+
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        return $result->fetch_assoc();
+    }
+
+    /**
+     * INVENTORY — STOCK LEVELS REPORT
+     * Each product with its current quantity, reorder level, and category name.
+     * Filterable by category and stock status ('low' = at/below reorder level, 'ok' = above it).
+     */
+    public function getStockReport($category = null, $status = null)
+    {
+        $sql = "SELECT p.productid, p.productName, p.category, c.categoryName,
+                       p.quantity, p.reorder_level, p.d_status
+                FROM product_tbl p
+                INNER JOIN categories_tbl c ON p.category = c.categoryid
+                WHERE 1=1";
+
+        $params = [];
+        $types  = "";
+
+        if (!empty($category)) {
+            $sql .= " AND p.category = ?";
+            $types .= "s";
+            $params[] = $category;
+        }
+
+        if ($status === 'low') {
+            $sql .= " AND p.quantity <= p.reorder_level";
+        } elseif ($status === 'ok') {
+            $sql .= " AND p.quantity > p.reorder_level";
+        }
+
+        $sql .= " ORDER BY p.productid DESC";
+
+        $stmt = $this->dbResult->prepare($sql);
+
+        if (!empty($params)) {
+            $stmt->bind_param($types, ...$params);
+        }
+
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $items = [];
+        while ($row = $result->fetch_assoc()) {
+            $items[] = $row;
+        }
+
+        return $items;
+    }
+
+    public function getStockReportSummary($category = null, $status = null)
+    {
+        $sql = "SELECT COUNT(*) AS total_products,
+                       COALESCE(SUM(p.quantity), 0) AS total_quantity,
+                       COALESCE(SUM(CASE WHEN p.quantity <= p.reorder_level THEN 1 ELSE 0 END), 0) AS low_stock_count,
+                       COALESCE(SUM(CASE WHEN p.quantity > p.reorder_level THEN 1 ELSE 0 END), 0) AS ok_stock_count
+                FROM product_tbl p
+                WHERE 1=1";
+
+        $params = [];
+        $types  = "";
+
+        if (!empty($category)) {
+            $sql .= " AND p.category = ?";
+            $types .= "s";
+            $params[] = $category;
+        }
+
+        if ($status === 'low') {
+            $sql .= " AND p.quantity <= p.reorder_level";
+        } elseif ($status === 'ok') {
+            $sql .= " AND p.quantity > p.reorder_level";
+        }
+
+        $stmt = $this->dbResult->prepare($sql);
+
+        if (!empty($params)) {
+            $stmt->bind_param($types, ...$params);
+        }
+
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        return $result->fetch_assoc();
+    }
+
+    /**
+     * INVENTORY — MOVEMENT HISTORY REPORT
+     * Every stock movement (IN/OUT/ADJUSTMENT) joined with the product name.
+     * Filterable by date range, product, and movement type.
+     */
+    public function getMovementReport($dateFrom = null, $dateTo = null, $productId = null, $movementType = null)
+    {
+        $sql = "SELECT m.movementid, m.productid, p.productName, m.movement_type,
+                       m.quantity_change, m.previous_quantity, m.new_quantity,
+                       m.reason, m.created_by, m.created_at
+                FROM stock_movements_tbl m
+                INNER JOIN product_tbl p ON m.productid = p.productid
+                WHERE 1=1";
+
+        $params = [];
+        $types  = "";
+
+        if (!empty($dateFrom)) {
+            $sql .= " AND DATE(m.created_at) >= ?";
+            $types .= "s";
+            $params[] = $dateFrom;
+        }
+
+        if (!empty($dateTo)) {
+            $sql .= " AND DATE(m.created_at) <= ?";
+            $types .= "s";
+            $params[] = $dateTo;
+        }
+
+        if (!empty($productId)) {
+            $sql .= " AND m.productid = ?";
+            $types .= "s";
+            $params[] = $productId;
+        }
+
+        if (!empty($movementType)) {
+            $sql .= " AND m.movement_type = ?";
+            $types .= "s";
+            $params[] = $movementType;
+        }
+
+        $sql .= " ORDER BY m.created_at DESC";
+
+        $stmt = $this->dbResult->prepare($sql);
+
+        if (!empty($params)) {
+            $stmt->bind_param($types, ...$params);
+        }
+
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $movements = [];
+        while ($row = $result->fetch_assoc()) {
+            $movements[] = $row;
+        }
+
+        return $movements;
+    }
+
+    public function getMovementReportSummary($dateFrom = null, $dateTo = null, $productId = null, $movementType = null)
+    {
+        $sql = "SELECT COUNT(*) AS total_movements,
+                       COALESCE(SUM(CASE WHEN m.movement_type = 'IN' THEN m.quantity_change ELSE 0 END), 0) AS total_in,
+                       COALESCE(SUM(CASE WHEN m.movement_type IN ('OUT','ADJUSTMENT') THEN ABS(m.quantity_change) ELSE 0 END), 0) AS total_out
+                FROM stock_movements_tbl m
+                WHERE 1=1";
+
+        $params = [];
+        $types  = "";
+
+        if (!empty($dateFrom)) {
+            $sql .= " AND DATE(m.created_at) >= ?";
+            $types .= "s";
+            $params[] = $dateFrom;
+        }
+
+        if (!empty($dateTo)) {
+            $sql .= " AND DATE(m.created_at) <= ?";
+            $types .= "s";
+            $params[] = $dateTo;
+        }
+
+        if (!empty($productId)) {
+            $sql .= " AND m.productid = ?";
+            $types .= "s";
+            $params[] = $productId;
+        }
+
+        if (!empty($movementType)) {
+            $sql .= " AND m.movement_type = ?";
+            $types .= "s";
+            $params[] = $movementType;
         }
 
         $stmt = $this->dbResult->prepare($sql);

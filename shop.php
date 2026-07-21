@@ -111,12 +111,20 @@ function e($string) {
                                 <p class="card-text text-success fw-bold">
                                     Rs.<?= number_format($product['price'], 2) ?>
                                 </p>
-                                <button
-                                    type="button"
-                                    class="btn btn-dark w-100"
-                                    onclick="addToCart('<?= e($product['productid']) ?>', '<?= e(addslashes($product['productName'])) ?>', <?= (float) $product['price'] ?>, '<?= e($product['image']) ?>')">
-                                    Add to Cart
-                                </button>
+
+                                <?php if ((int) $product['quantity'] > 0): ?>
+                                    <button
+                                        type="button"
+                                        class="btn btn-dark w-100"
+                                        onclick="addToCart('<?= e($product['productid']) ?>', '<?= e(addslashes($product['productName'])) ?>', <?= (float) $product['price'] ?>, '<?= e($product['image']) ?>')">
+                                        Add to Cart
+                                    </button>
+                                <?php else: ?>
+                                    <button type="button" class="btn btn-secondary w-100" disabled>
+                                        Out of Stock
+                                    </button>
+                                <?php endif; ?>
+
                             </div>
                         </div>
                     </div>

@@ -268,8 +268,8 @@ $nav_image = '../../assets/woman.png';
             </li>
 
             <!-- Reporting -->
-            <li class="nav-item <?php echo (in_array($currentpage, ['order_report.php', 'product_report.php', 'category_report.php', 'supplier_report.php'])) ? 'menu-open' : ''; ?> mb-3">
-              <a href="#" class="nav-link <?php echo (in_array($currentpage, ['order_report.php', 'product_report.php', 'category_report.php', 'supplier_report.php'])) ? 'active' : ''; ?>">
+            <li class="nav-item <?php echo (in_array($currentpage, ['order_report.php', 'product_report.php', 'category_report.php', 'supplier_report.php', 'inventory_report.php'])) ? 'menu-open' : ''; ?> mb-3">
+              <a href="#" class="nav-link <?php echo (in_array($currentpage, ['order_report.php', 'product_report.php', 'category_report.php', 'supplier_report.php', 'inventory_report.php'])) ? 'active' : ''; ?>">
                 <i class="nav-icon bi bi-gear-fill"></i>
                 <p>
                   Report Options
@@ -299,6 +299,12 @@ $nav_image = '../../assets/woman.png';
                   <a href="supplier_report.php" class="nav-link <?php echo ($currentpage == 'supplier_report.php') ? 'active' : ''; ?>">
                     <i class="nav-icon bi bi-truck"></i>
                     <p>Suppliers Report</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="inventory_report.php" class="nav-link <?php echo ($currentpage == 'inventory_report.php') ? 'active' : ''; ?>">
+                    <i class="nav-icon bi bi-clipboard-data-fill"></i>
+                    <p>Inventory Report</p>
                   </a>
                 </li>
               </ul>

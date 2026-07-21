@@ -5,11 +5,21 @@ include_once('auto_id.php');
 class Order extends Main
 {
 
-    /**
-     * Places an order: inserts one row into orders_tbl and one row
-     * per cart item into order_items_tbl, inside a transaction so
-     * either everything saves or nothing does.
-     */
+    private function generateMovementId()
+    {
+        $result = $this->dbResult->query(
+            "SELECT movementid FROM stock_movements_tbl ORDER BY movementid DESC LIMIT 1"
+        );
+
+        if ($result && $result->num_rows > 0) {
+            $prevId = $result->fetch_assoc()['movementid'];
+            $num = intval(substr($prevId, 3)) + 1;
+            return "MOV" . str_pad($num, 3, '0', STR_PAD_LEFT);
+        }
+
+        return "MOV001";
+    }
+
     public function placeOrder($customer, $cart, $deliveryFee = 350.00)
     {
         if (empty($cart)) {
@@ -32,6 +42,37 @@ class Order extends Main
         $this->dbResult->begin_transaction();
 
         try {
+            // ---- STEP 1: Check stock for every cart item first (lock the rows) ----
+            // FOR UPDATE locks these product rows until commit/rollback, so two
+            // customers checking out the same low-stock item at once can't both pass.
+            $sqlStockCheck = $this->dbResult->prepare(
+                "SELECT productName, quantity FROM product_tbl WHERE productid = ? FOR UPDATE"
+            );
+
+            foreach ($cart as $item) {
+                $productId    = $item['id'];
+                $requestedQty = (int) $item['qty'];
+
+                $sqlStockCheck->bind_param("s", $productId);
+                $sqlStockCheck->execute();
+                $row = $sqlStockCheck->get_result()->fetch_assoc();
+
+                if (!$row) {
+                    throw new Exception("Product {$productId} no longer exists.");
+                }
+
+                if ((int) $row['quantity'] < $requestedQty) {
+                    // Roll back and tell the customer exactly which item is short.
+                    $this->dbResult->rollback();
+                    return [
+                        'status'  => 'insufficient_stock',
+                        'orderid' => null,
+                        'message' => "Only {$row['quantity']} unit(s) of \"{$row['productName']}\" left in stock."
+                    ];
+                }
+            }
+
+            // ---- STEP 2: Insert the order ----
             $sqlOrder = $this->dbResult->prepare(
                 "INSERT INTO orders_tbl
                     (orderid, customer_id, customer_name, phone, email, address, city, postal_code, notes, payment_method, payment_verified, subtotal, delivery_fee, total, order_status)
@@ -60,17 +101,32 @@ class Order extends Main
                 throw new Exception($sqlOrder->error);
             }
 
+            // ---- STEP 3: Insert order items + deduct stock + log the movement ----
             $sqlItem = $this->dbResult->prepare(
                 "INSERT INTO order_items_tbl (orderid, productid, product_name, price, qty, line_total)
                  VALUES (?, ?, ?, ?, ?, ?)"
             );
 
+            $sqlDeductStock = $this->dbResult->prepare(
+                "UPDATE product_tbl SET quantity = quantity - ? WHERE productid = ?"
+            );
+
+            $sqlCurrent = $this->dbResult->prepare(
+                "SELECT quantity FROM product_tbl WHERE productid = ?"
+            );
+
+            $sqlMovement = $this->dbResult->prepare(
+                "INSERT INTO stock_movements_tbl
+                    (movementid, productid, movement_type, quantity_change, previous_quantity, new_quantity, reason, created_by, created_at)
+                 VALUES (?, ?, 'OUT', ?, ?, ?, ?, ?, NOW())"
+            );
+
             foreach ($cart as $item) {
-                $productId  = $item['id'];
-                $name       = $item['name'];
-                $price      = (float) $item['price'];
-                $qty        = (int) $item['qty'];
-                $lineTotal  = $price * $qty;
+                $productId = $item['id'];
+                $name      = $item['name'];
+                $price     = (float) $item['price'];
+                $qty       = (int) $item['qty'];
+                $lineTotal = $price * $qty;
 
                 $sqlItem->bind_param(
                     "sssdid",
@@ -84,6 +140,38 @@ class Order extends Main
 
                 if (!$sqlItem->execute()) {
                     throw new Exception($sqlItem->error);
+                }
+
+                // Read the current (locked) quantity again for accurate before/after values
+                $sqlCurrent->bind_param("s", $productId);
+                $sqlCurrent->execute();
+                $currentRow = $sqlCurrent->get_result()->fetch_assoc();
+                $before = (int) $currentRow['quantity'];
+                $after  = $before - $qty;
+
+                $sqlDeductStock->bind_param("is", $qty, $productId);
+                if (!$sqlDeductStock->execute()) {
+                    throw new Exception($sqlDeductStock->error);
+                }
+
+                $movementQtyChange = -$qty; // negative because stock is going OUT
+                $movementId = $this->generateMovementId(); // uses $this->dbResult — same connection/transaction
+                $reason     = "Order #{$orderid}";
+                $createdBy  = $customer['cusid'];
+
+                $sqlMovement->bind_param(
+                    "ssiiiss",
+                    $movementId,
+                    $productId,
+                    $movementQtyChange,
+                    $before,
+                    $after,
+                    $reason,
+                    $createdBy
+                );
+
+                if (!$sqlMovement->execute()) {
+                    throw new Exception($sqlMovement->error);
                 }
             }
 

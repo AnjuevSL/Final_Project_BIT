@@ -31,6 +31,19 @@ $totalProducts = $obj->dbResult->query($sqlProducts)->fetch_assoc()['count'] ?? 
 $sqlCustomers = "SELECT COUNT(*) as count FROM customer_tbl";
 $totalCustomers = $obj->dbResult->query($sqlCustomers)->fetch_assoc()['count'] ?? 0;
 
+// ---- Inventory stats (active products only) ----
+// Out of Stock: quantity is 0
+// Low Stock:    quantity > 0 but at/below the reorder level
+// Available:    quantity above the reorder level
+$sqlOutOfStock = "SELECT COUNT(*) as count FROM product_tbl WHERE d_status = 1 AND quantity <= 0";
+$outOfStockCount = $obj->dbResult->query($sqlOutOfStock)->fetch_assoc()['count'] ?? 0;
+
+$sqlLowStock = "SELECT COUNT(*) as count FROM product_tbl WHERE d_status = 1 AND quantity > 0 AND quantity <= reorder_level";
+$lowStockCount = $obj->dbResult->query($sqlLowStock)->fetch_assoc()['count'] ?? 0;
+
+$sqlAvailable = "SELECT COUNT(*) as count FROM product_tbl WHERE d_status = 1 AND quantity > reorder_level";
+$availableCount = $obj->dbResult->query($sqlAvailable)->fetch_assoc()['count'] ?? 0;
+
 // Get recent orders
 $sqlRecentOrders = "SELECT orderid, customer_name, total, order_status, created_at FROM orders_tbl ORDER BY created_at DESC LIMIT 5";
 $recentOrders = [];
@@ -75,6 +88,13 @@ if ($result && $result->num_rows > 0) {
         $categories[$row['category']] = (int)$row['count'];
     }
 }
+
+// Inventory status breakdown (for the doughnut chart)
+$inventoryStatus = [
+    'Available'    => (int) $availableCount,
+    'Low Stock'    => (int) $lowStockCount,
+    'Out of Stock' => (int) $outOfStockCount,
+];
 ?>
 <!doctype html>
 <html lang="en">
@@ -160,9 +180,68 @@ if ($result && $result->num_rows > 0) {
                     </div>
                 </div>
 
+                <!-- Inventory Stats Cards Row -->
+                <div class="row mb-4">
+                    <!-- <div class="col-md-3 col-sm-6 mb-3">
+                        <div class="card text-white bg-secondary">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-title">Total Products</h6>
+                                        <h3><?php echo $totalProducts; ?></h3>
+                                    </div>
+                                    <i class="bi bi-box-seam-fill" style="font-size: 2rem; opacity: 0.5;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div> -->
+
+                    <div class="col-md-3 col-sm-6 mb-3">
+                        <div class="card text-white bg-success">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-title">Available Products</h6>
+                                        <h3><?php echo $availableCount; ?></h3>
+                                    </div>
+                                    <i class="bi bi-check-circle-fill" style="font-size: 2rem; opacity: 0.5;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 col-sm-6 mb-3">
+                        <div class="card text-white bg-danger">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-title">Out of Stock</h6>
+                                        <h3><?php echo $outOfStockCount; ?></h3>
+                                    </div>
+                                    <i class="bi bi-x-circle-fill" style="font-size: 2rem; opacity: 0.5;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 col-sm-6 mb-3">
+                        <div class="card text-white bg-warning">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-title">Low Stock</h6>
+                                        <h3><?php echo $lowStockCount; ?></h3>
+                                    </div>
+                                    <i class="bi bi-exclamation-triangle-fill" style="font-size: 2rem; opacity: 0.5;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Order Status Stats -->
                 <div class="row mb-4">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="card">
                             <div class="card-header">
                                 <h5 class="card-title">Order Status Distribution</h5>
@@ -173,13 +252,25 @@ if ($result && $result->num_rows > 0) {
                         </div>
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="card">
                             <div class="card-header">
                                 <h5 class="card-title">Category Distribution</h5>
                             </div>
                             <div class="card-body">
                                 <canvas id="categoryChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0">Inventory Status</h5>
+                                <a href="inventory.php" class="btn btn-sm btn-outline-secondary">View Inventory</a>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="inventoryStatusChart"></canvas>
                             </div>
                         </div>
                     </div>
@@ -332,6 +423,30 @@ if ($result && $result->num_rows > 0) {
                         datasets: [{
                             data: Object.values(categoryData),
                             backgroundColor: ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#00f2fe', '#fa709a', '#fee140']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Inventory Status Chart (Available / Low Stock / Out of Stock)
+            const inventoryData = <?php echo json_encode($inventoryStatus); ?>;
+            const ctx3 = document.getElementById('inventoryStatusChart');
+            if (ctx3) {
+                new Chart(ctx3, {
+                    type: 'doughnut',
+                    data: {
+                        labels: Object.keys(inventoryData),
+                        datasets: [{
+                            data: Object.values(inventoryData),
+                            backgroundColor: ['#28a745', '#ffc107', '#dc3545']
                         }]
                     },
                     options: {

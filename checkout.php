@@ -27,9 +27,6 @@ if (isset($_SESSION['user']) && isset($_SESSION['usertype']) && $_SESSION['usert
     if ($customerJson) {
         $customer = json_decode($customerJson, true);
     }
-    //     echo "<pre>";
-    // print_r($customer);
-    // exit();
 }
 ?>
 <!DOCTYPE html>
@@ -52,6 +49,20 @@ if (isset($_SESSION['user']) && isset($_SESSION['usertype']) && $_SESSION['usert
 
         <h2 class="text-center mb-5">Checkout</h2>
 
+        <?php if (isset($_GET['error']) && $_GET['error'] !== ''): ?>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <strong>Could not place your order:</strong> <?= e(urldecode($_GET['error'])) ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <?php endif; ?>
+
+        <?php if (isset($_GET['slip_error'])): ?>
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                Your order was placed, but the payment slip upload failed. Please contact us or re-upload it from your order page.
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <?php endif; ?>
+
         <div class="row g-4">
 
             <!-- ================= Delivery Details Form ================= -->
@@ -61,10 +72,7 @@ if (isset($_SESSION['user']) && isset($_SESSION['usertype']) && $_SESSION['usert
 
                     <form id="checkoutForm" action="place_order.php" method="POST" enctype="multipart/form-data">
                         <div class="row g-3">
-                            <!-- <div class="col-md-6"> -->
-                            <!-- <label class="form-label">Customer Id</label> -->
                             <input type="text" name="cusid" class="form-control" value="<?= e($customer['customerid'] ?? '') ?>" required hidden>
-                            <!-- </div> -->
                             <div class="col-md-6">
                                 <label class="form-label">Full Name <span class="text-danger">*</span></label>
                                 <input type="text"
