@@ -164,6 +164,17 @@ if (isset($_SESSION['user'])) {
         $(document).ready(function() {
             loadSuppliers();
 
+            // ---------------- Live search ----------------
+            // Filters the already-loaded supplier rows as you type in the
+            // shared navbar search box (#searchtext).
+            $('#searchtext').on('input', function() {
+                var searchtext = $(this).val().trim().toLowerCase();
+                $('#supplierTableBody tr').each(function() {
+                    var rowText = $(this).text().toLowerCase();
+                    $(this).toggle(searchtext === '' || rowText.indexOf(searchtext) !== -1);
+                });
+            });
+
             $('#addsupplierbtn').on('click', function(e) {
                 e.preventDefault();
                 var supplierName = $('#supplierName').val().trim();
@@ -216,6 +227,9 @@ if (isset($_SESSION['user'])) {
                             });
                         }
                         $('#supplierTableBody').html(rows);
+
+                        // keep an active search term applied to freshly loaded rows
+                        $('#searchtext').trigger('input');
                     },
                     error: function() {
                         $('#supplierTableBody').html('<tr><td colspan="6" class="text-center text-danger">Failed to load suppliers</td></tr>');

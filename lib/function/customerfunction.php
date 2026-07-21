@@ -9,53 +9,53 @@ class Customer extends Main
 
     public function addCustomer($email, $password, $name, $phone, $nic, $gender, $birthday)
     {
-    
+
         // Check phone duplicate
         $checkPhone = $this->dbResult->prepare("SELECT customerPhone FROM customer_tbl WHERE customerPhone = ?");
         $checkPhone->bind_param("s", $phone);
         $checkPhone->execute();
         $checkPhone->store_result();
-    
+
         if ($checkPhone->num_rows > 0) {
             $checkPhone->close();
             return "Phone number Exists";
         }
         $checkPhone->close();
-    
+
         // Check email duplicate
         $checkEmail = $this->dbResult->prepare("SELECT customerEmail FROM customer_tbl WHERE customerEmail = ?");
         $checkEmail->bind_param("s", $email);
         $checkEmail->execute();
         $checkEmail->store_result();
-    
+
         if ($checkEmail->num_rows > 0) {
             $checkEmail->close();
             return "Email Exists";
         }
         $checkEmail->close();
-    
+
         $autonumber = new AutoNumber;
-    
+
         $id = $autonumber->NumberGenaration("customerid", "customer_tbl", "CUS");
-    
+
         if ($this->dbResult->error) {
             echo ($this->dbResult->error);
             exit;
         }
-    
+
         $sqlInsert = $this->dbResult->prepare("INSERT INTO customer_tbl VALUES (?, ?, ?, ?, ?, ?, ?, 0, Now())");
         $sqlInsert->bind_param("sssssss", $id, $email, $name, $phone, $nic, $gender, $birthday);
-    
+
         if ($sqlInsert->execute()) {
-    
+
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-    
+
             $sqlinsertlogin = $this->dbResult->prepare("
                 INSERT INTO login_tbl (loginid, loginEmail, loginPassword, loginRole, loginStatus, d_status, created_at)
                 VALUES (?, ?, ?, 'customer', 1, 0, NOW())
             ");
             $sqlinsertlogin->bind_param("sss", $id, $email, $hashedPassword);
-    
+
             if ($sqlinsertlogin->execute()) {
                 return "success";
             } else {
@@ -64,10 +64,10 @@ class Customer extends Main
         } else {
             return "error";
         }
-    
+
         $sqlInsert->close();
     }
-    
+
     public function editCustomer($userid, $email, $name, $phone, $nic, $gender, $birthday)
     {
 
@@ -369,23 +369,40 @@ class Customer extends Main
 
     public function loaddatasearch($text, $role)
     {
-        $sql = $this->dbResult->prepare("
-        SELECT *
-        FROM customer_tbl
-        INNER JOIN login_tbl
-            ON customer_tbl.customerid = login_tbl.loginid
-        WHERE customer_tbl.d_status = 0
-          AND login_tbl.loginRole = ?
-          AND (
-                customer_tbl.customerName LIKE ?
-             OR customer_tbl.customerPhone LIKE ?
-             OR customer_tbl.customerEmail LIKE ?
-          )
-        ");
-
         $search = "%{$text}%";
 
-        $sql->bind_param("ssss", $role, $search, $search, $search);
+        if ($role == "Admin") {
+
+            $sql = $this->dbResult->prepare("
+                SELECT *
+                FROM login_tbl
+                WHERE loginRole = ?
+                AND (
+                    loginid LIKE ?
+                    OR loginEmail LIKE ?
+                )
+            ");
+
+            $sql->bind_param("sss", $role, $search, $search);
+        } else {
+
+            $sql = $this->dbResult->prepare("
+                SELECT *
+                FROM customer_tbl
+                INNER JOIN login_tbl
+                    ON customer_tbl.customerid = login_tbl.loginid
+                WHERE customer_tbl.d_status = 0
+                AND login_tbl.loginRole = ?
+                AND (
+                    customer_tbl.customerName LIKE ?
+                    OR customer_tbl.customerPhone LIKE ?
+                    OR customer_tbl.customerEmail LIKE ?
+                )
+            ");
+
+            $sql->bind_param("ssss", $role, $search, $search, $search);
+        }
+
         $sql->execute();
 
         $result = $sql->get_result();
@@ -396,34 +413,66 @@ class Customer extends Main
             $btnClass = ($rec['loginStatus'] == 1) ? "btn-warning" : "btn-success";
             $btnText = ($rec['loginStatus'] == 1) ? "Deactivate" : "Activate";
 
-            echo '<tr>
-                <th>' . $rec['customerid'] . '</th>
-                <th>' . $rec['customerName'] . '</th>
-                <td>' . $rec['customerEmail'] . '</td>
-                <td>' . $rec['customerPhone'] . '</td>
-                <td>' . $rec['customerNIC'] . '</td>
-                <td>' . $status . '</td>
-                <td>
-                    <button type="button"
-                        onclick="edituser(\'' . $rec['customerid'] . '\')"
-                        class="btn btn-warning">
-                        Edit
-                    </button>
 
-                    <button type="button"
-                        class="btn ' . $btnClass . ' deactivatebtn"
-                        data-id="' . $rec['customerid'] . '"
-                        data-status="' . $status . '">
-                        ' . $btnText . '
-                    </button>
+            if ($role == "Admin") {
 
-                    <button type="button"
-                        class="btn btn-danger deletebtn"
-                        data-id="' . $rec['customerid'] . '">
-                        Delete
-                    </button>
-                </td>
-            </tr>';
+                echo '
+                <tr>
+                    <th>' . $rec['loginid'] . '</th>
+                    <td>' . $rec['loginEmail'] . '</td>
+                    <td>' . $rec['loginRole'] . '</td>
+                    <td>' . $status . '</td>
+                    <td>
+                        <button type="button"
+                            onclick="edituser(\'' . $rec['loginid'] . '\')"
+                            class="btn btn-info">
+                            Edit
+                        </button>
+    
+                        <button type="button"
+                            class="btn ' . $btnClass . ' deactivatebtn"
+                            data-id="' . $rec['loginid'] . '">
+                            ' . $btnText . '
+                        </button>
+    
+                        <button type="button"
+                            class="btn btn-danger deletebtn"
+                            data-id="' . $rec['loginid'] . '">
+                            Delete
+                        </button>
+                    </td>
+                </tr>';
+            } else {
+
+                echo '
+                <tr>
+                    <th>' . $rec['customerid'] . '</th>
+                    <th>' . $rec['customerName'] . '</th>
+                    <td>' . $rec['customerEmail'] . '</td>
+                    <td>' . $rec['customerPhone'] . '</td>
+                    <td>' . $rec['customerNIC'] . '</td>
+                    <td>' . $status . '</td>
+                    <td>
+                        <button type="button"
+                            onclick="edituser(\'' . $rec['customerid'] . '\')"
+                            class="btn btn-info">
+                            Edit
+                        </button>
+    
+                        <button type="button"
+                            class="btn ' . $btnClass . ' deactivatebtn"
+                            data-id="' . $rec['customerid'] . '">
+                            ' . $btnText . '
+                        </button>
+    
+                        <button type="button"
+                            class="btn btn-danger deletebtn"
+                            data-id="' . $rec['customerid'] . '">
+                            Delete
+                        </button>
+                    </td>
+                </tr>';
+            }
         }
     }
 

@@ -97,26 +97,6 @@ if (isset($_SESSION['user'])) {
                                 <label for="description" class="form-label mt-3">Category description</label>
                                 <textarea class="form-control" id="description" rows="3" name="description"></textarea>
                             </div>
-                            <!-- <div>
-                                <label for="price" class="form-label mt-3">Price (Rs.)</label>
-                                <input type="number" step="0.01" min="0" class="form-control" id="price" name="price" placeholder="Enter price">
-                            </div> -->
-                            <!-- <div>
-                                <label for="category" class="form-label mt-3">category Category</label>
-                                <select class="form-select" id="category" name="category">
-                                    <option>cat 1</option>
-                                    <option>cat 2</option>
-                                    <option>cat 3</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label for="supplier" class="form-label mt-3">Supplier</label>
-                                <select class="form-select" id="supplier" name="supplier">
-                                    <option>1</option>
-                                    <option>2</option>
-                                    <option>3</option>
-                                </select>
-                            </div> -->
                             <div class="row">
                                 <div class="col-7">
                                     <label for="formFile" class="form-label mt-3">Category Image</label>
@@ -157,26 +137,6 @@ if (isset($_SESSION['user'])) {
                                 <label for="edit_description" class="form-label mt-3">Category description</label>
                                 <textarea class="form-control" id="edit_description" rows="3" name="description"></textarea>
                             </div>
-                            <!-- <div>
-                                <label for="edit_price" class="form-label mt-3">Price (Rs.)</label>
-                                <input type="number" step="0.01" min="0" class="form-control" id="edit_price" name="price">
-                            </div> -->
-                            <!-- <div>
-                                <label for="edit_category" class="form-label mt-3">category Category</label>
-                                <select class="form-select" id="edit_category" name="category">
-                                    <option>cat 1</option>
-                                    <option>cat 2</option>
-                                    <option>cat 3</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label for="edit_supplier" class="form-label mt-3">Supplier</label>
-                                <select class="form-select" id="edit_supplier" name="supplier">
-                                    <option>1</option>
-                                    <option>2</option>
-                                    <option>3</option>
-                                </select>
-                            </div> -->
                             <div class="row">
                                 <div class="col-7">
                                     <label for="edit_formFile" class="form-label mt-3">Category Image (leave empty to keep current)</label>
@@ -205,6 +165,17 @@ if (isset($_SESSION['user'])) {
             // Load the category list on page load
             loadcategorys();
 
+            // ---------------- Live search ----------------
+            // Filters the already-loaded category rows as you type in the
+            // shared navbar search box (#searchtext).
+            $('#searchtext').on('input', function() {
+                var searchtext = $(this).val().trim().toLowerCase();
+                $('#categoryTableBody tr').each(function() {
+                    var rowText = $(this).text().toLowerCase();
+                    $(this).toggle(searchtext === '' || rowText.indexOf(searchtext) !== -1);
+                });
+            });
+
             // ---------------- Add category ----------------
 
             $('#formFile').change(function() {
@@ -220,17 +191,12 @@ if (isset($_SESSION['user'])) {
                 e.preventDefault();
 
                 var categoryname = $('#categoryname').val().trim();
-                // var price = $('#price').val();
                 var imageFile = $('#formFile')[0].files[0];
 
                 if (categoryname === '') {
                     alert('Please enter a category name.');
                     return;
                 }
-                // if (!price) {
-                //     alert('Please enter a price.');
-                //     return;
-                // }
                 if (!imageFile) {
                     alert('Please select a category image.');
                     return;
@@ -289,8 +255,6 @@ if (isset($_SESSION['user'])) {
                                 rows += '<tr>' +
                                     '<td><img src="../../' + category.image + '" style="width:80px;height:80px;object-fit:cover;"></td>' +
                                     '<td>' + category.categoryName + '</td>' +
-                                    // '<td>Rs.' + parseFloat(category.price).toFixed(2) + '</td>' +
-                                    // '<td>' + category.category + '</td>' +
                                     '<td>' + statusLabel + '</td>' +
                                     '<td class="">' +
                                     '<button class="btn btn-sm btn-outline-primary btn-edit" data-id="' + category.categoryid + '">Edit</button> ' +
@@ -302,6 +266,9 @@ if (isset($_SESSION['user'])) {
                         }
 
                         $('#categoryTableBody').html(rows);
+
+                        // keep an active search term applied to freshly loaded rows
+                        $('#searchtext').trigger('input');
                     },
                     error: function() {
                         $('#categoryTableBody').html('<tr><td colspan="6" class="text-center text-danger">Failed to load categorys</td></tr>');
@@ -326,9 +293,6 @@ if (isset($_SESSION['user'])) {
                         $('#edit_categoryId').val(category.categoryid);
                         $('#edit_categoryname').val(category.categoryName);
                         $('#edit_description').val(category.description);
-                        // $('#edit_price').val(category.price);
-                        // $('#edit_category').val(category.category);
-                        // $('#edit_supplier').val(category.supplier);
                         $('#edit_imgprev').attr('src', '../../' + category.image);
 
                         $('#editcategoryModal').modal('show');
