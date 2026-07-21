@@ -3,9 +3,14 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 include_once('lib/function/customerfunction.php');
+include_once('lib/function/categoryfunction.php');
 
 $isLoggedIn   = isset($_SESSION['user']) && isset($_SESSION['usertype']) && $_SESSION['usertype'] == 'Customer';
 $customerName = '';
+
+// Load active categories for the Products dropdown
+$categoryObj = new Category();
+$navCategories = $categoryObj->getActiveCategories();
 
 if ($isLoggedIn) {
     $custObj = new Customer();
@@ -50,6 +55,35 @@ if ($isLoggedIn) {
     .user-menu-toggle:hover {
         color: #BF9264;
     }
+
+    /* Products hover dropdown — opens on hover, "Products" link itself still navigates on click */
+    .nav-item.category-dropdown {
+        position: relative;
+    }
+
+    .nav-item.category-dropdown .category-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        margin: 0;
+        min-width: 180px;
+        z-index: 1000;
+    }
+
+    .nav-item.category-dropdown:hover .category-menu {
+        display: block;
+    }
+
+    /* small invisible bridge so the menu doesn't close when moving the cursor down to it */
+    .nav-item.category-dropdown::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 100%;
+        height: 8px;
+    }
 </style>
 
 <nav class="navbar navbar-expand-lg bg-dark navbar-dark" data-bs-theme="dark" py-0>
@@ -79,8 +113,25 @@ if ($isLoggedIn) {
                         Home
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link <?php echo $currentpage == 'products.php' ? 'active' : '' ?>" href="#">Products</a>
+                <li class="nav-item category-dropdown">
+                    <a class="nav-link <?php echo $currentpage == 'products.php' ? 'active' : '' ?>" href="products.php">
+                        Products <i class="fa-solid fa-chevron-down" style="font-size:11px;"></i>
+                    </a>
+                    <ul class="dropdown-menu category-menu">
+                        <li><a class="dropdown-item" href="products.php">All Products</a></li>
+                        <?php if (!empty($navCategories)) : ?>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <?php foreach ($navCategories as $cat) : ?>
+                                <li>
+                                    <a class="dropdown-item" href="products.php?category=<?php echo urlencode($cat['categoryid']); ?>">
+                                        <?php echo htmlspecialchars($cat['categoryName']); ?>
+                                    </a>
+                                </li>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </ul>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link <?php echo $currentpage == 'table.php' ? 'active' : '' ?>" href="table.php">Design Studio</a>
