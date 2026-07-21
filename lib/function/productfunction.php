@@ -27,8 +27,8 @@ class Product extends Main
             exit;
         }
 
-        // Column order: productid, productName, productDetails, price, category, image, supplier, d_status(=1)
-        $sqlinsertproduct = $this->dbResult->prepare("INSERT INTO product_tbl VALUES (?, ?, ?, ?, ?, ?, ?, 1)");
+        // Column order: productid, productName, productDetails, price, category, qty(=0), rec_lev(=5), image, supplier, d_status(=1)
+        $sqlinsertproduct = $this->dbResult->prepare("INSERT INTO product_tbl VALUES (?, ?, ?, ?, ?, 0, 5, ?, ?, 1)");
 
         $sqlinsertproduct->bind_param("sssdsss", $id, $productname, $details, $price, $category, $imageurl, $supplier);
 
