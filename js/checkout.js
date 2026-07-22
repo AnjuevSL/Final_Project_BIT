@@ -3,7 +3,7 @@
 const DELIVERY_FEE = 350.0;
 
 // Render the order summary panel using the cart from localStorage
-function renderCheckoutSummary() {
+async function renderCheckoutSummary() {
   const cart = getCart();
   const itemsEl = document.getElementById("checkoutItems");
   const emptyEl = document.getElementById("checkoutEmpty");
@@ -11,6 +11,7 @@ function renderCheckoutSummary() {
   const deliveryEl = document.getElementById("checkoutDelivery");
   const totalEl = document.getElementById("checkoutTotal");
   const placeOrderBtn = document.getElementById("placeOrderBtn");
+  const stockWarningEl = document.getElementById("checkoutStockWarning");
 
   if (!itemsEl) return; // not on the checkout page
 
@@ -20,15 +21,29 @@ function renderCheckoutSummary() {
     subtotalEl.textContent = "Rs.0.00";
     totalEl.textContent = "Rs.0.00";
     placeOrderBtn.disabled = true;
+    if (stockWarningEl) stockWarningEl.style.display = "none";
     return;
   }
 
   emptyEl.style.display = "none";
-  placeOrderBtn.disabled = false;
+
+  // Check live stock for every cart item before letting the customer place the order
+  const stockMap = await fetchStockForCart(cart);
+  let hasStockIssue = false;
 
   itemsEl.innerHTML = cart
     .map(
-      (item) => `
+      (item) => {
+        const stockInfo = stockMap[item.id];
+        const available = stockInfo ? stockInfo.quantity : null;
+        const overStock = available !== null && item.qty > available;
+        if (overStock) hasStockIssue = true;
+
+        const warningHtml = overStock
+          ? `<p class="mb-0 small text-danger">Only ${available} in stock — reduce quantity before ordering</p>`
+          : "";
+
+        return `
         <div class="checkout-item d-flex align-items-center mb-3">
             <img src="${escapeHtml(item.image)}" alt="${escapeHtml(
         item.name
@@ -38,12 +53,14 @@ function renderCheckoutSummary() {
                 <p class="mb-0 text-muted small">Qty: ${
                   item.qty
                 } × Rs.${item.price.toFixed(2)}</p>
+                ${warningHtml}
             </div>
             <span class="fw-bold">Rs.${(item.price * item.qty).toFixed(
               2
             )}</span>
         </div>
-    `
+    `;
+      }
     )
     .join("");
 
@@ -53,6 +70,13 @@ function renderCheckoutSummary() {
   subtotalEl.textContent = "Rs." + subtotal.toFixed(2);
   deliveryEl.textContent = "Rs." + DELIVERY_FEE.toFixed(2);
   totalEl.textContent = "Rs." + total.toFixed(2);
+
+  if (stockWarningEl) {
+    stockWarningEl.style.display = hasStockIssue ? "block" : "none";
+  }
+
+  // Block "Place Order" while any item exceeds available stock
+  placeOrderBtn.disabled = hasStockIssue;
 }
 
 // Before the form submits, attach the current cart as JSON so the server can process the order

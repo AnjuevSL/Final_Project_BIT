@@ -118,11 +118,11 @@ if ($isLoggedIn) {
                         Products <i class="fa-solid fa-chevron-down" style="font-size:11px;"></i>
                     </a>
                     <ul class="dropdown-menu category-menu">
-                        <li><a class="dropdown-item" href="products.php">All Products</a></li>
+                        <!-- <li><a class="dropdown-item" href="products.php">All Products</a></li> -->
                         <?php if (!empty($navCategories)) : ?>
-                            <li>
+                            <!-- <li>
                                 <hr class="dropdown-divider">
-                            </li>
+                            </li> -->
                             <?php foreach ($navCategories as $cat) : ?>
                                 <li>
                                     <a class="dropdown-item" href="products.php?category=<?php echo urlencode($cat['categoryid']); ?>">
