@@ -102,7 +102,6 @@ $inventoryStatus = [
 <head>
     <title>Dashboard - Boutique Store Admin</title>
     <?php include_once('common.php') ?>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.css">
     <main class="app-main">
         <div class="app-content-header">
             <div class="container-fluid">
@@ -121,6 +120,7 @@ $inventoryStatus = [
 
         <div class="app-content">
             <div class="container-fluid">
+
                 <!-- Stats Cards Row -->
                 <div class="row mb-4">
                     <div class="col-md-3 col-sm-6 mb-3">
@@ -182,21 +182,7 @@ $inventoryStatus = [
 
                 <!-- Inventory Stats Cards Row -->
                 <div class="row mb-4">
-                    <!-- <div class="col-md-3 col-sm-6 mb-3">
-                        <div class="card text-white bg-secondary">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="card-title">Total Products</h6>
-                                        <h3><?php echo $totalProducts; ?></h3>
-                                    </div>
-                                    <i class="bi bi-box-seam-fill" style="font-size: 2rem; opacity: 0.5;"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div> -->
-
-                    <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="col-md-4 col-sm-6 mb-3">
                         <div class="card text-white bg-success">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
@@ -210,7 +196,7 @@ $inventoryStatus = [
                         </div>
                     </div>
 
-                    <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="col-md-4 col-sm-6 mb-3">
                         <div class="card text-white bg-danger">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
@@ -224,7 +210,7 @@ $inventoryStatus = [
                         </div>
                     </div>
 
-                    <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="col-md-4 col-sm-6 mb-3">
                         <div class="card text-white bg-warning">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
@@ -247,7 +233,9 @@ $inventoryStatus = [
                                 <h5 class="card-title">Order Status Distribution</h5>
                             </div>
                             <div class="card-body">
-                                <canvas id="orderStatusChart"></canvas>
+                                <div style="position: relative; height: 300px;">
+                                    <canvas id="orderStatusChart"></canvas>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -258,7 +246,9 @@ $inventoryStatus = [
                                 <h5 class="card-title">Category Distribution</h5>
                             </div>
                             <div class="card-body">
-                                <canvas id="categoryChart"></canvas>
+                                <div style="position: relative; height: 300px;">
+                                    <canvas id="categoryChart"></canvas>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -270,7 +260,9 @@ $inventoryStatus = [
                                 <a href="inventory.php" class="btn btn-sm btn-outline-secondary">View Inventory</a>
                             </div>
                             <div class="card-body">
-                                <canvas id="inventoryStatusChart"></canvas>
+                                <div style="position: relative; height: 300px;">
+                                    <canvas id="inventoryStatusChart"></canvas>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -380,12 +372,13 @@ $inventoryStatus = [
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </main>
 
     <script src="../../js/jquery.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script>
         $(document).ready(function() {
             // Order Status Chart
@@ -403,6 +396,7 @@ $inventoryStatus = [
                     },
                     options: {
                         responsive: true,
+                        maintainAspectRatio: false,
                         plugins: {
                             legend: {
                                 position: 'bottom'
@@ -427,6 +421,7 @@ $inventoryStatus = [
                     },
                     options: {
                         responsive: true,
+                        maintainAspectRatio: false,
                         plugins: {
                             legend: {
                                 position: 'bottom'
@@ -451,6 +446,7 @@ $inventoryStatus = [
                     },
                     options: {
                         responsive: true,
+                        maintainAspectRatio: false,
                         plugins: {
                             legend: {
                                 position: 'bottom'
@@ -463,6 +459,6 @@ $inventoryStatus = [
     </script>
 
     <?php include_once('footer.php') ?>
-    </body>
+</body>
 
 </html>

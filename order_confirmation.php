@@ -120,9 +120,15 @@ $order = $orderid !== '' ? $orderObj->getOrderById($orderid) : null;
         </div>
     </div>
 
-
     <div class="text-center mt-4">
-        <a href="shop.php" class="btn btn-outline-dark">Continue Shopping</a>
+        <a href="invoice.php?orderid=<?= $order['orderid'] ?>"
+            class="btn btn-success">
+            Download Invoice
+        </a>
+
+        <a href="shop.php" class="btn btn-outline-dark">
+            Continue Shopping
+        </a>
     </div>
 
 <?php endif; ?>

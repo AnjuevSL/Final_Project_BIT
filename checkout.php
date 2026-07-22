@@ -177,6 +177,10 @@ if (isset($_SESSION['user']) && isset($_SESSION['usertype']) && $_SESSION['usert
                 <div class="checkout-card order-summary">
                     <h5 class="checkout-section-title">Order Summary</h5>
 
+                    <div id="checkoutStockWarning" class="alert alert-danger py-2 px-3 small" style="display:none;">
+                        Some items exceed available stock. Please reduce the quantity before placing your order.
+                    </div>
+
                     <div id="checkoutItems"></div>
                     <p id="checkoutEmpty" class="text-center text-muted" style="display:none;">
                         Your cart is empty. <a href="shop.php">Continue shopping</a>.

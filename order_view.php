@@ -159,7 +159,10 @@ $order = $orderid !== '' ? $orderObj->getOrderById($orderid) : null;
                 </div>
             </div>
 
-            <div class="text-center mt-4">
+            <div class="text-center mt-4"> <a href="invoice.php?orderid=<?= $order['orderid'] ?>"
+                    class="btn btn-success">
+                    Download Invoice
+                </a>
                 <a href="my_orders.php" class="btn btn-outline-dark">Back to All Orders</a>
             </div>
 

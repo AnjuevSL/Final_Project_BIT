@@ -95,6 +95,36 @@ class Product extends Main
         }
     }
 
+    // READ — current stock quantity for a list of product IDs at once
+    // (used by the cart/checkout page to validate stock before order placement)
+    public function getStockForIds($productIds)
+    {
+        if (empty($productIds)) {
+            return [];
+        }
+
+        // Build a "?,?,?" placeholder list matching the number of IDs
+        $placeholders = implode(',', array_fill(0, count($productIds), '?'));
+        $types = str_repeat('s', count($productIds));
+
+        $sql = $this->dbResult->prepare(
+            "SELECT productid, productName, quantity FROM product_tbl WHERE productid IN ($placeholders)"
+        );
+        $sql->bind_param($types, ...$productIds);
+        $sql->execute();
+        $result = $sql->get_result();
+
+        $stockMap = [];
+        while ($row = $result->fetch_assoc()) {
+            $stockMap[$row['productid']] = [
+                'quantity' => (int) $row['quantity'],
+                'productName' => $row['productName'],
+            ];
+        }
+
+        return $stockMap;
+    }
+
     // READ — active products only (for the customer-facing site)
     // Includes quantity + reorder_level so the storefront can show "Out of Stock" correctly.
     public function getActiveProducts()
