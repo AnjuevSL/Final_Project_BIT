@@ -133,14 +133,21 @@ if ($isLoggedIn) {
                         <?php endif; ?>
                     </ul>
                 </li>
-                <li class="nav-item">
+                <!-- <li class="nav-item">
                     <a class="nav-link <?php echo $currentpage == 'table.php' ? 'active' : '' ?>" href="table.php">Design Studio</a>
-                </li>
+                </li> -->
             </ul>
 
             <!-- Center: Search Bar -->
-            <form class="d-flex mx-auto my-2 my-lg-0 w-50" role="search">
-                <input class="form-control" type="search" placeholder="Search" aria-label="Search">
+            <?php
+                // Search stays on the page the person is currently browsing
+                // (shop.php or products.php). Any other page falls back to
+                // products.php, since that's the only page that supports search.
+                $searchTargetPage = in_array($currentpage, ['shop.php', 'products.php', 'index.php'], true) ? $currentpage : 'products.php';
+            ?>
+            <form class="d-flex mx-auto my-2 my-lg-0 w-50" role="search" action="<?php echo htmlspecialchars($searchTargetPage, ENT_QUOTES, 'UTF-8'); ?>" method="GET">
+                <input type="hidden" name="category" value="<?php echo isset($_GET['category']) ? htmlspecialchars($_GET['category'], ENT_QUOTES, 'UTF-8') : ''; ?>">
+                <input class="form-control" type="search" name="search" placeholder="Search products..." aria-label="Search" value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search'], ENT_QUOTES, 'UTF-8') : ''; ?>">
                 <button class="search-btn ms-2" type="submit">
                     <i class="fa-solid fa-magnifying-glass"></i>
                 </button>

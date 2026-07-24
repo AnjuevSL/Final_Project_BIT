@@ -5,6 +5,17 @@ require_once 'lib/function/productfunction.php';
 $productObj = new Product;
 $products = $productObj->getActiveProducts();
 
+// ---- Search filter (from navbar search box: shop.php?search=frock) ----
+// Matches against product name or product details, case-insensitive.
+$searchQuery = isset($_GET['search']) ? trim($_GET['search']) : '';
+
+if ($searchQuery !== '') {
+    $products = array_values(array_filter($products, function ($p) use ($searchQuery) {
+        $haystack = ($p['productName'] ?? '') . ' ' . ($p['productDetails'] ?? '');
+        return stripos($haystack, $searchQuery) !== false;
+    }));
+}
+
 // Helper — escapes output for XSS protection
 function e($string) {
     return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
@@ -136,11 +147,23 @@ function e($string) {
     <!-- Featured Products -->
     <div class="container mt-5">
 
-        <h2 class="text-center mb-4">Featured Products</h2>
+        <h2 class="text-center mb-4">
+            <?= $searchQuery !== '' ? 'Search results for "' . e($searchQuery) . '"' : 'Featured Products' ?>
+        </h2>
+
+        <?php if ($searchQuery !== ''): ?>
+            <p class="text-center mb-4">
+                <a href="index.php" class="text-decoration-none">&larr; Clear search</a>
+            </p>
+        <?php endif; ?>
 
         <div class="row">
             <?php if (empty($products)): ?>
-                <p class="text-center text-muted">Products naha methanata. Admin panel eken add karanna.</p>
+                <?php if ($searchQuery !== ''): ?>
+                    <p class="text-center text-muted">No products found matching "<?= e($searchQuery) ?>".</p>
+                <?php else: ?>
+                    <p class="text-center text-muted">Products naha methanata. Admin panel eken add karanna.</p>
+                <?php endif; ?>
             <?php else: ?>
                 <?php foreach ($products as $product): ?>
                         <div class="col-md-3 col-sm-6 mb-4">
