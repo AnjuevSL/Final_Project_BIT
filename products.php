@@ -28,6 +28,17 @@ if ($selectedCategoryId !== '') {
     }
 }
 
+// ---- Search filter (from navbar search box: products.php?search=frock) ----
+// Matches against product name or product details, case-insensitive.
+$searchQuery = isset($_GET['search']) ? trim($_GET['search']) : '';
+
+if ($searchQuery !== '') {
+    $allProducts = array_values(array_filter($allProducts, function ($p) use ($searchQuery) {
+        $haystack = ($p['productName'] ?? '') . ' ' . ($p['productDetails'] ?? '');
+        return stripos($haystack, $searchQuery) !== false;
+    }));
+}
+
 // ---- Simple pagination (12 products per page) ----
 $perPage    = 12;
 $totalItems = count($allProducts);
@@ -129,8 +140,23 @@ $products = array_slice($allProducts, $offset, $perPage);
     <!-- Page Header -->
     <div class="container mt-5">
         <h2 class="text-center mb-4">
-            <?= $selectedCategoryName !== '' ? e($selectedCategoryName) : 'All Products' ?>
+            <?php if ($searchQuery !== '' && $selectedCategoryName !== ''): ?>
+                Search results for "<?= e($searchQuery) ?>" in <?= e($selectedCategoryName) ?>
+            <?php elseif ($searchQuery !== ''): ?>
+                Search results for "<?= e($searchQuery) ?>"
+            <?php elseif ($selectedCategoryName !== ''): ?>
+                <?= e($selectedCategoryName) ?>
+            <?php else: ?>
+                All Products
+            <?php endif; ?>
         </h2>
+
+        <?php if ($searchQuery !== ''): ?>
+            <?php $clearSearchUrl = 'products.php' . ($selectedCategoryId !== '' ? '?category=' . urlencode($selectedCategoryId) : ''); ?>
+            <p class="text-center mb-4">
+                <a href="<?= e($clearSearchUrl) ?>" class="text-decoration-none">&larr; Clear search</a>
+            </p>
+        <?php endif; ?>
 
         <?php if ($selectedCategoryId !== ''): ?>
             <p class="text-center mb-4">
@@ -147,7 +173,11 @@ $products = array_slice($allProducts, $offset, $perPage);
 
         <div class="row">
             <?php if (empty($products)): ?>
-                <p class="text-center text-muted">Products naha methanata. Admin panel eken add karanna.</p>
+                <?php if ($searchQuery !== ''): ?>
+                    <p class="text-center text-muted">No products found matching "<?= e($searchQuery) ?>".</p>
+                <?php else: ?>
+                    <p class="text-center text-muted">Products naha methanata. Admin panel eken add karanna.</p>
+                <?php endif; ?>
             <?php else: ?>
                 <?php foreach ($products as $product): ?>
                     <div class="col-md-3 col-sm-6 mb-4">
@@ -190,7 +220,10 @@ $products = array_slice($allProducts, $offset, $perPage);
 
         <!-- Pagination -->
         <?php if ($totalPages > 1): ?>
-            <?php $catQuery = $selectedCategoryId !== '' ? '&category=' . urlencode($selectedCategoryId) : ''; ?>
+            <?php
+                $catQuery = $selectedCategoryId !== '' ? '&category=' . urlencode($selectedCategoryId) : '';
+                $catQuery .= $searchQuery !== '' ? '&search=' . urlencode($searchQuery) : '';
+            ?>
             <nav aria-label="Product pagination" class="mt-4 mb-5">
                 <ul class="pagination justify-content-center">
 
